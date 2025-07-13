@@ -1,13 +1,9 @@
 import os
-from datetime import timedelta
 
 class Config:
     """基础配置类"""
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY') or 'jwt-secret-key'
-    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
-    JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
     
     # 分页配置
     POSTS_PER_PAGE = 10
@@ -59,9 +55,24 @@ class ProductionConfig(Config):
             app.logger.setLevel(logging.INFO)
             app.logger.info('KSF RESTful startup')
 
+class XMLConfig(Config):
+    """开发环境配置"""
+    DEBUG = True
+    SQLALCHEMY_DATABASE_URI = os.environ.get('XML_DATABASE_URL') or \
+        'sqlite:///' + os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data-dev.sqlite')
+    LOG_LEVEL = 'DEBUG'
+class DictConfig(Config):
+    """开发环境配置"""
+    DEBUG = True
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DICT_DATABASE_URL') or \
+        'sqlite:///' + os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data-dev.sqlite')
+    LOG_LEVEL = 'DEBUG'
+
 config = {
     'development': DevelopmentConfig,
     'testing': TestingConfig,
     'production': ProductionConfig,
-    'default': DevelopmentConfig
+    'default': DevelopmentConfig,
+    'xml': XMLConfig,
+    'dict': DictConfig
 } 

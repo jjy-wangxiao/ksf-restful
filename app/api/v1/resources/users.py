@@ -1,21 +1,52 @@
 from flask import request
-from flask_restful import Resource
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_restx import Resource, fields
 from app import db
 from app.models.user import User
 from app.schemas.user import UserSchema, UserCreateSchema
-from app.utils.decorators import validate_json, admin_required
+from app.utils.decorators import validate_json
 from app.utils.pagination import paginate
+from app.swagger import users_ns, message_model, error_model, pagination_model
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
 user_create_schema = UserCreateSchema()
 
+# 定义模型
+user_model = users_ns.model('User', {
+    'id': fields.String(description='用户ID'),
+    'username': fields.String(description='用户名'),
+    'email': fields.String(description='邮箱'),
+    'is_active': fields.Boolean(description='是否激活'),
+    'is_admin': fields.Boolean(description='是否管理员'),
+    'created_at': fields.DateTime(description='创建时间'),
+    'updated_at': fields.DateTime(description='更新时间')
+})
+
+user_create_model = users_ns.model('UserCreate', {
+    'username': fields.String(required=True, description='用户名'),
+    'email': fields.String(required=True, description='邮箱'),
+    'password': fields.String(required=True, description='密码')
+})
+
+user_update_model = users_ns.model('UserUpdate', {
+    'username': fields.String(description='用户名'),
+    'email': fields.String(description='邮箱'),
+    'password': fields.String(description='密码')
+})
+
+user_list_response = users_ns.model('UserListResponse', {
+    'items': fields.List(fields.Nested(user_model), description='用户列表'),
+    'pagination': fields.Nested(pagination_model, description='分页信息')
+})
+
+@users_ns.route('/')
 class UserListResource(Resource):
     """用户列表资源"""
     
-    @jwt_required()
-    @admin_required
+    @users_ns.doc('获取用户列表')
+    @users_ns.param('page', '页码', type=int, default=1)
+    @users_ns.param('per_page', '每页数量', type=int, default=10)
+    @users_ns.response(200, '获取成功', user_list_response)
     def get(self):
         """获取用户列表"""
         page = request.args.get('page', 1, type=int)
@@ -27,6 +58,10 @@ class UserListResource(Resource):
         
         return paginate(users, users_schema)
     
+    @users_ns.doc('创建新用户')
+    @users_ns.expect(user_create_model)
+    @users_ns.response(201, '创建成功', user_model)
+    @users_ns.response(400, '数据验证失败', error_model)
     @validate_json
     def post(self):
         """创建新用户"""
@@ -59,26 +94,28 @@ class UserListResource(Resource):
             'user': user_schema.dump(user)
         }, 201
 
+@users_ns.route('/<string:user_id>')
+@users_ns.param('user_id', '用户ID')
 class UserResource(Resource):
     """单个用户资源"""
     
-    @jwt_required()
+    @users_ns.doc('获取用户信息')
+    @users_ns.response(200, '获取成功', user_model)
+    @users_ns.response(404, '用户不存在', error_model)
     def get(self, user_id):
         """获取用户信息"""
         user = User.query.get_or_404(user_id)
         return {'user': user_schema.dump(user)}
     
-    @jwt_required()
+    @users_ns.doc('更新用户信息')
+    @users_ns.expect(user_update_model)
+    @users_ns.response(200, '更新成功', user_model)
+    @users_ns.response(400, '数据验证失败', error_model)
+    @users_ns.response(404, '用户不存在', error_model)
+    @validate_json
     def put(self, user_id):
         """更新用户信息"""
-        current_user_id = get_jwt_identity()
         user = User.query.get_or_404(user_id)
-        
-        # 只能更新自己的信息，除非是管理员
-        if current_user_id != user_id:
-            current_user = User.query.get(current_user_id)
-            if not current_user.is_admin:
-                return {'message': '权限不足'}, 403
         
         data = request.get_json()
         
@@ -105,8 +142,9 @@ class UserResource(Resource):
             'user': user_schema.dump(user)
         }
     
-    @jwt_required()
-    @admin_required
+    @users_ns.doc('删除用户')
+    @users_ns.response(200, '删除成功', message_model)
+    @users_ns.response(404, '用户不存在', error_model)
     def delete(self, user_id):
         """删除用户"""
         user = User.query.get_or_404(user_id)

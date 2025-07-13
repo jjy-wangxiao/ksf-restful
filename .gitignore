@@ -1,3 +1,5 @@
+.conda/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -119,4 +121,26 @@ Thumbs.db
 *.sqlite
 *.sqlite3
 logs/
-data-*.sqlite 
+data-*.sqlite
+
+# Poetry
+poetry.lock
+dist/
+*.egg-info/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# pytest
+.pytest_cache/
+
+# pre-commit
+.pre-commit-config.yaml.bak 
