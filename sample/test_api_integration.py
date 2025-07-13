@@ -48,7 +48,7 @@ class APITester:
         print(f"[{timestamp}] [{level}] {message}")
     
     def make_request(self, method: str, endpoint: str, data: Dict = None, 
-                    params: Dict = None, expected_status: int = 200) -> Dict:
+                    params: Dict = None, expected_status = 200) -> Dict:
         """发送HTTP请求并验证响应"""
         url = f"{self.base_url}{self.api_prefix}{endpoint}"
         
@@ -78,12 +78,20 @@ class APITester:
                 response_data = {"raw_text": response.text}
             
             # 验证状态码
-            if response.status_code == expected_status:
-                self.log("✅ 请求成功")
-                return response_data
+            if isinstance(expected_status, list):
+                if response.status_code in expected_status:
+                    self.log("✅ 请求成功")
+                    return response_data
+                else:
+                    self.log(f"❌ 请求失败，期望状态码 {expected_status}，实际 {response.status_code}")
+                    return {"error": f"Unexpected status code: {response.status_code}"}
             else:
-                self.log(f"❌ 请求失败，期望状态码 {expected_status}，实际 {response.status_code}")
-                return {"error": f"Unexpected status code: {response.status_code}"}
+                if response.status_code == expected_status:
+                    self.log("✅ 请求成功")
+                    return response_data
+                else:
+                    self.log(f"❌ 请求失败，期望状态码 {expected_status}，实际 {response.status_code}")
+                    return {"error": f"Unexpected status code: {response.status_code}"}
                 
         except requests.exceptions.RequestException as e:
             self.log(f"❌ 请求异常: {str(e)}", "ERROR")
@@ -127,8 +135,16 @@ class APITester:
         response = self.make_request("GET", "/dict/dw-types", params={"page": 1, "per_page": 5})
         if "error" in response:
             return False
+        # 新增断言
+        assert isinstance(response, dict), f"返回类型应为dict，实际为{type(response)}"
+        assert "data" in response and isinstance(response["data"], list), "返回结果应包含data数组"
+        assert "meta" in response and isinstance(response["meta"], dict), "返回结果应包含meta对象"
+        # 后续遍历/断言都用 response["data"]
+        for item in response["data"]:
+            assert "id" in item and "typeName" in item, "每个单位类别应包含id和typeName"
         
-        # 2. 创建单位类别
+        # 2. 创建单位类别前先清理
+        self.make_request("DELETE", f"/dict/dw-types/01", expected_status=[204, 404])
         self.log("2. 测试创建单位类别")
         dw_type_data = {
             "id": "01",
@@ -174,16 +190,25 @@ class APITester:
         response = self.make_request("GET", "/dict/dws", params={"page": 1, "per_page": 5})
         if "error" in response:
             return False
+        # 其它分页接口（单位、属性、一级分类、二级分类、名称映射、名称分类）同理，全部用response['data']和response['meta']访问和断言
+        assert isinstance(response, dict), f"返回类型应为dict，实际为{type(response)}"
+        assert "data" in response and isinstance(response["data"], list), "返回结果应包含data数组"
+        assert "meta" in response and isinstance(response["meta"], dict), "返回结果应包含meta对象"
+        for item in response["data"]:
+            assert "id" in item and "type_id" in item and "dw" in item, "每个单位应包含id, type_id, dw"
         
         # 2. 先创建单位类别（如果不存在）
         self.log("2. 创建必要的单位类别")
+        # 先清理可能存在的同名数据
+        self.make_request("DELETE", f"/dict/dw-types/02", expected_status=[204, 404])
         dw_type_data = {
             "id": "02",
             "typeName": "测试单位类别02"
         }
         self.make_request("POST", "/dict/dw-types", data=dw_type_data, expected_status=201)
         
-        # 3. 创建单位
+        # 3. 创建单位前先清理
+        self.make_request("DELETE", f"/dict/dws/0001", expected_status=[204, 404])
         self.log("3. 测试创建单位")
         dw_data = {
             "id": "0001",
@@ -218,7 +243,7 @@ class APITester:
         
         # 7. 清理单位类别
         self.log("7. 清理单位类别")
-        self.make_request("DELETE", f"/dict/dw-types/02", expected_status=204)
+        self.make_request("DELETE", f"/dict/dw-types/02", expected_status=[204, 404])
         
         self.created_ids['dws'].remove(dw_id)
         self.log("✅ 单位API测试通过")
@@ -234,8 +259,14 @@ class APITester:
         response = self.make_request("GET", "/dict/rcj-ejfl-sxs", params={"page": 1, "per_page": 5})
         if "error" in response:
             return False
+        assert isinstance(response, dict), f"返回类型应为dict，实际为{type(response)}"
+        assert "data" in response and isinstance(response["data"], list), "返回结果应包含data数组"
+        assert "meta" in response and isinstance(response["meta"], dict), "返回结果应包含meta对象"
+        for item in response["data"]:
+            assert "id" in item and "sx" in item, "每个属性应包含id和sx"
         
-        # 2. 创建属性
+        # 2. 创建属性前先清理
+        self.make_request("DELETE", f"/dict/rcj-ejfl-sxs/0001", expected_status=[204, 404])
         self.log("2. 测试创建属性")
         sx_data = {
             "id": "0001",
@@ -281,8 +312,14 @@ class APITester:
         response = self.make_request("GET", "/dict/rcj-yjfls", params={"page": 1, "per_page": 5})
         if "error" in response:
             return False
+        assert isinstance(response, dict), f"返回类型应为dict，实际为{type(response)}"
+        assert "data" in response and isinstance(response["data"], list), "返回结果应包含data数组"
+        assert "meta" in response and isinstance(response["meta"], dict), "返回结果应包含meta对象"
+        for item in response["data"]:
+            assert "id" in item and "yjflmc" in item and "yjflms" in item, "每个一级分类应包含id, yjflmc, yjflms"
         
-        # 2. 创建一级分类
+        # 2. 创建一级分类前先清理
+        self.make_request("DELETE", f"/dict/rcj-yjfls/0001", expected_status=[204, 404])
         self.log("2. 测试创建一级分类")
         yjfl_data = {
             "id": "0001",
@@ -329,9 +366,16 @@ class APITester:
         response = self.make_request("GET", "/dict/rcj-ejfls", params={"page": 1, "per_page": 5})
         if "error" in response:
             return False
+        assert isinstance(response, dict), f"返回类型应为dict，实际为{type(response)}"
+        assert "data" in response and isinstance(response["data"], list), "返回结果应包含data数组"
+        assert "meta" in response and isinstance(response["meta"], dict), "返回结果应包含meta对象"
+        for item in response["data"]:
+            assert "id" in item and "yjfl_id" in item and "ejflmc" in item and "ejflms" in item, "每个二级分类应包含id, yjfl_id, ejflmc, ejflms"
         
         # 2. 先创建必要的一级分类
         self.log("2. 创建必要的一级分类")
+        # 先清理可能存在的同名数据
+        self.make_request("DELETE", f"/dict/rcj-yjfls/01", expected_status=[204, 404])
         yjfl_data = {
             "id": "01",
             "yjflmc": "测试一级分类",
@@ -339,7 +383,8 @@ class APITester:
         }
         self.make_request("POST", "/dict/rcj-yjfls", data=yjfl_data, expected_status=201)
         
-        # 3. 创建二级分类
+        # 3. 创建二级分类前先清理
+        self.make_request("DELETE", f"/dict/rcj-ejfls/0001", expected_status=[204, 404])
         self.log("3. 测试创建二级分类")
         ejfl_data = {
             "id": "0001",
@@ -377,7 +422,7 @@ class APITester:
         
         # 7. 清理一级分类
         self.log("7. 清理一级分类")
-        self.make_request("DELETE", f"/dict/rcj-yjfls/01", expected_status=204)
+        self.make_request("DELETE", f"/dict/rcj-yjfls/01", expected_status=[204, 404])
         
         self.created_ids['rcj_ejfls'].remove(ejfl_id)
         self.log("✅ 人材机二级分类API测试通过")
@@ -393,9 +438,16 @@ class APITester:
         response = self.make_request("GET", "/dict/rcj-mc2ejflids", params={"page": 1, "per_page": 5})
         if "error" in response:
             return False
+        assert isinstance(response, dict), f"返回类型应为dict，实际为{type(response)}"
+        assert "data" in response and isinstance(response["data"], list), "返回结果应包含data数组"
+        assert "meta" in response and isinstance(response["meta"], dict), "返回结果应包含meta对象"
+        for item in response["data"]:
+            assert "ejflid" in item and "orignal_rcjmc" in item, "每个映射应包含ejflid和orignal_rcjmc"
         
         # 2. 先创建必要的二级分类
         self.log("2. 创建必要的二级分类")
+        # 先清理可能存在的同名数据
+        self.make_request("DELETE", f"/dict/rcj-yjfls/03", expected_status=[204, 404])
         # 创建一级分类
         yjfl_data = {
             "id": "03",
@@ -404,6 +456,8 @@ class APITester:
         }
         self.make_request("POST", "/dict/rcj-yjfls", data=yjfl_data, expected_status=201)
         
+        # 先清理可能存在的二级分类
+        self.make_request("DELETE", f"/dict/rcj-ejfls/0003", expected_status=[204, 404])
         # 创建二级分类
         ejfl_data = {
             "id": "0003",
@@ -413,7 +467,7 @@ class APITester:
         }
         self.make_request("POST", "/dict/rcj-ejfls", data=ejfl_data, expected_status=201)
         
-        # 3. 创建映射
+        # 3. 创建映射前先清理（映射ID是自增的，这里只清理依赖的分类）
         self.log("3. 测试创建映射")
         mapping_data = {
             "ejflid": "0003",
@@ -449,8 +503,8 @@ class APITester:
         
         # 7. 清理分类数据
         self.log("7. 清理分类数据")
-        self.make_request("DELETE", f"/dict/rcj-ejfls/0003", expected_status=204)
-        self.make_request("DELETE", f"/dict/rcj-yjfls/03", expected_status=204)
+        self.make_request("DELETE", f"/dict/rcj-ejfls/0003", expected_status=[204, 404])
+        self.make_request("DELETE", f"/dict/rcj-yjfls/03", expected_status=[204, 404])
         
         if mapping_id in self.created_ids['rcj_mc2ejflids']:
             self.created_ids['rcj_mc2ejflids'].remove(mapping_id)
@@ -467,9 +521,16 @@ class APITester:
         response = self.make_request("GET", "/dict/rcj-mc-classifies", params={"page": 1, "per_page": 5})
         if "error" in response:
             return False
+        assert isinstance(response, dict), f"返回类型应为dict，实际为{type(response)}"
+        assert "data" in response and isinstance(response["data"], list), "返回结果应包含data数组"
+        assert "meta" in response and isinstance(response["meta"], dict), "返回结果应包含meta对象"
+        for item in response["data"]:
+            assert "id" in item and "cleaned_rcj_original_mc" in item and "yjflid" in item and "ejflid" in item, "每个分类应包含id, cleaned_rcj_original_mc, yjflid, ejflid"
         
         # 2. 先创建必要的分类数据
         self.log("2. 创建必要的分类数据")
+        # 先清理可能存在的同名数据
+        self.make_request("DELETE", f"/dict/rcj-yjfls/03", expected_status=[204, 404])
         # 创建一级分类
         yjfl_data = {
             "id": "03",
@@ -478,6 +539,8 @@ class APITester:
         }
         self.make_request("POST", "/dict/rcj-yjfls", data=yjfl_data, expected_status=201)
         
+        # 先清理可能存在的二级分类
+        self.make_request("DELETE", f"/dict/rcj-ejfls/0004", expected_status=[204, 404])
         # 创建二级分类
         ejfl_data = {
             "id": "0004",
@@ -487,7 +550,7 @@ class APITester:
         }
         self.make_request("POST", "/dict/rcj-ejfls", data=ejfl_data, expected_status=201)
         
-        # 3. 创建分类
+        # 3. 创建分类前先清理（分类ID是自增的，这里只清理依赖的分类）
         self.log("3. 测试创建分类")
         classify_data = {
             "cleaned_rcj_original_mc": "测试清洗后的人材机名称",
@@ -526,8 +589,8 @@ class APITester:
         
         # 7. 清理分类数据
         self.log("7. 清理分类数据")
-        self.make_request("DELETE", f"/dict/rcj-ejfls/0004", expected_status=204)
-        self.make_request("DELETE", f"/dict/rcj-yjfls/03", expected_status=204)
+        self.make_request("DELETE", f"/dict/rcj-ejfls/0004", expected_status=[204, 404])
+        self.make_request("DELETE", f"/dict/rcj-yjfls/03", expected_status=[204, 404])
         
         if classify_id in self.created_ids['rcj_mc_classifies']:
             self.created_ids['rcj_mc_classifies'].remove(classify_id)
@@ -551,11 +614,11 @@ class APITester:
         # 2. 测试无效的JSON数据
         self.log("2. 测试无效的JSON数据")
         # 这里我们发送一个无效的请求来测试错误处理
-        response = self.make_request("POST", "/dict/dw-types", data={"invalid": "data"}, expected_status=500)
+        response = self.make_request("POST", "/dict/dw-types", data={"invalid": "data"}, expected_status=400)
         if "error" not in response:
-            self.log("✅ 500错误处理测试通过")
+            self.log("✅ 400错误处理测试通过")
         else:
-            self.log("❌ 500错误处理测试失败")
+            self.log("❌ 400错误处理测试失败")
             return False
         
         self.log("✅ 错误处理测试通过")
@@ -595,7 +658,7 @@ class APITester:
                         # 这些是字符串ID
                         endpoint = f"/dict/{category.replace('_', '-')}/{item_id}"
                     
-                    self.make_request("DELETE", endpoint)
+                    self.make_request("DELETE", endpoint, expected_status=[204, 404])
                     self.log(f"已清理 {category}: {item_id}")
                 except Exception as e:
                     self.log(f"清理 {category}: {item_id} 失败: {str(e)}", "WARNING")

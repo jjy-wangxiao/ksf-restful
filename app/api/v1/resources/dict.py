@@ -56,6 +56,11 @@ dw_type_model = api.model('DwType', {
     'update_time': fields.DateTime(description='更新时间')
 })
 
+dw_type_list_response = api.model('DwTypeListResponse', {
+    'data': fields.List(fields.Nested(dw_type_model)),
+    'meta': fields.Raw(description='分页信息')
+})
+
 dw_type_create_model = api.model('DwTypeCreate', {
     'id': fields.String(required=True, description='单位类别ID'),
     'typeName': fields.String(required=True, description='类别名称')
@@ -200,6 +205,42 @@ rcj_mc_classify_update_model = api.model('RcjMCClassifyUpdate', {
     'ejflmc': fields.String(description='二级分类名称')
 })
 
+# 单位分页响应模型
+dw_list_response = api.model('DwListResponse', {
+    'data': fields.List(fields.Nested(dw_model)),
+    'meta': fields.Raw(description='分页信息')
+})
+
+# 属性分页响应模型
+rcj_ejfl_sx_list_response = api.model('RcjEjflSxListResponse', {
+    'data': fields.List(fields.Nested(rcj_ejfl_sx_model)),
+    'meta': fields.Raw(description='分页信息')
+})
+
+# 一级分类分页响应模型
+rcj_yjfl_list_response = api.model('RcjYjflListResponse', {
+    'data': fields.List(fields.Nested(rcj_yjfl_model)),
+    'meta': fields.Raw(description='分页信息')
+})
+
+# 二级分类分页响应模型
+rcj_ejfl_list_response = api.model('RcjEjflListResponse', {
+    'data': fields.List(fields.Nested(rcj_ejfl_model)),
+    'meta': fields.Raw(description='分页信息')
+})
+
+# 名称映射分页响应模型
+rcj_mc2ejflid_list_response = api.model('RcjMC2EjflidListResponse', {
+    'data': fields.List(fields.Nested(rcj_mc2ejflid_model)),
+    'meta': fields.Raw(description='分页信息')
+})
+
+# 名称分类分页响应模型
+rcj_mc_classify_list_response = api.model('RcjMCClassifyListResponse', {
+    'data': fields.List(fields.Nested(rcj_mc_classify_model)),
+    'meta': fields.Raw(description='分页信息')
+})
+
 # ==================== 单位类别管理 ====================
 
 @dict_ns.route('/dw-types')
@@ -213,7 +254,7 @@ class DwTypeListResource(Resource):
     @dict_ns.doc('获取单位类别列表')
     @dict_ns.param('page', '页码', type=int, default=1)
     @dict_ns.param('per_page', '每页数量', type=int, default=10)
-    @dict_ns.response(200, '获取成功', [dw_type_model])
+    @dict_ns.response(200, '获取成功', dw_type_list_response)
     def get(self):
         """获取单位类别列表"""
         page = request.args.get('page', 1, type=int)
@@ -233,8 +274,8 @@ class DwTypeListResource(Resource):
             dto = DwTypeRequestDTO(**data)
             result = self.dict_service.create_dw_type(dto)
             return result.to_dict(), 201
-        except ValueError as e:
-            err = ErrorResponse(code=ErrorCode.DUPLICATE_ENTRY, message=str(e))
+        except (ValueError, TypeError) as e:
+            err = ErrorResponse(code=ErrorCode.VALIDATION_ERROR, message='请求数据验证失败', details={'error': str(e)})
             return err.to_dict(), 400
         except Exception as e:
             err = ErrorResponse(code=ErrorCode.INTERNAL_ERROR, message='服务器内部错误', details={'error': str(e)})
@@ -275,8 +316,8 @@ class DwTypeResource(Resource):
                 err = ErrorResponse(code=ErrorCode.NOT_FOUND, message='单位类别不存在')
                 return err.to_dict(), 404
             return result.to_dict(), 200
-        except ValueError as e:
-            err = ErrorResponse(code=ErrorCode.DUPLICATE_ENTRY, message=str(e))
+        except (ValueError, TypeError) as e:
+            err = ErrorResponse(code=ErrorCode.VALIDATION_ERROR, message='请求数据验证失败', details={'error': str(e)})
             return err.to_dict(), 400
         except Exception as e:
             err = ErrorResponse(code=ErrorCode.INTERNAL_ERROR, message='服务器内部错误', details={'error': str(e)})
@@ -307,7 +348,7 @@ class DwListResource(Resource):
     @dict_ns.param('page', '页码', type=int, default=1)
     @dict_ns.param('per_page', '每页数量', type=int, default=10)
     @dict_ns.param('type_id', '类别ID', type=str)
-    @dict_ns.response(200, '获取成功', [dw_model])
+    @dict_ns.response(200, '获取成功', dw_list_response)
     def get(self):
         """获取单位列表"""
         page = request.args.get('page', 1, type=int)
@@ -328,8 +369,8 @@ class DwListResource(Resource):
             dto = DwRequestDTO(**data)
             result = self.dict_service.create_dw(dto)
             return result.to_dict(), 201
-        except ValueError as e:
-            err = ErrorResponse(code=ErrorCode.DUPLICATE_ENTRY, message=str(e))
+        except (ValueError, TypeError) as e:
+            err = ErrorResponse(code=ErrorCode.VALIDATION_ERROR, message='请求数据验证失败', details={'error': str(e)})
             return err.to_dict(), 400
         except Exception as e:
             err = ErrorResponse(code=ErrorCode.INTERNAL_ERROR, message='服务器内部错误', details={'error': str(e)})
@@ -370,8 +411,8 @@ class DwResource(Resource):
                 err = ErrorResponse(code=ErrorCode.NOT_FOUND, message='单位不存在')
                 return err.to_dict(), 404
             return result.to_dict(), 200
-        except ValueError as e:
-            err = ErrorResponse(code=ErrorCode.DUPLICATE_ENTRY, message=str(e))
+        except (ValueError, TypeError) as e:
+            err = ErrorResponse(code=ErrorCode.VALIDATION_ERROR, message='请求数据验证失败', details={'error': str(e)})
             return err.to_dict(), 400
         except Exception as e:
             err = ErrorResponse(code=ErrorCode.INTERNAL_ERROR, message='服务器内部错误', details={'error': str(e)})
@@ -401,7 +442,7 @@ class RcjEjflSxListResource(Resource):
     @dict_ns.doc('获取人材机二级分类属性列表')
     @dict_ns.param('page', '页码', type=int, default=1)
     @dict_ns.param('per_page', '每页数量', type=int, default=10)
-    @dict_ns.response(200, '获取成功', [rcj_ejfl_sx_model])
+    @dict_ns.response(200, '获取成功', rcj_ejfl_sx_list_response)
     def get(self):
         """获取人材机二级分类属性列表"""
         page = request.args.get('page', 1, type=int)
@@ -421,8 +462,8 @@ class RcjEjflSxListResource(Resource):
             dto = RcjEjflSxRequestDTO(**data)
             result = self.dict_service.create_rcj_ejfl_sx(dto)
             return result.to_dict(), 201
-        except ValueError as e:
-            err = ErrorResponse(code=ErrorCode.DUPLICATE_ENTRY, message=str(e))
+        except (ValueError, TypeError) as e:
+            err = ErrorResponse(code=ErrorCode.VALIDATION_ERROR, message='请求数据验证失败', details={'error': str(e)})
             return err.to_dict(), 400
         except Exception as e:
             err = ErrorResponse(code=ErrorCode.INTERNAL_ERROR, message='服务器内部错误', details={'error': str(e)})
@@ -463,8 +504,8 @@ class RcjEjflSxResource(Resource):
                 err = ErrorResponse(code=ErrorCode.NOT_FOUND, message='属性不存在')
                 return err.to_dict(), 404
             return result.to_dict(), 200
-        except ValueError as e:
-            err = ErrorResponse(code=ErrorCode.DUPLICATE_ENTRY, message=str(e))
+        except (ValueError, TypeError) as e:
+            err = ErrorResponse(code=ErrorCode.VALIDATION_ERROR, message='请求数据验证失败', details={'error': str(e)})
             return err.to_dict(), 400
         except Exception as e:
             err = ErrorResponse(code=ErrorCode.INTERNAL_ERROR, message='服务器内部错误', details={'error': str(e)})
@@ -494,7 +535,7 @@ class RcjYjflListResource(Resource):
     @dict_ns.doc('获取人材机一级分类列表')
     @dict_ns.param('page', '页码', type=int, default=1)
     @dict_ns.param('per_page', '每页数量', type=int, default=10)
-    @dict_ns.response(200, '获取成功', [rcj_yjfl_model])
+    @dict_ns.response(200, '获取成功', rcj_yjfl_list_response)
     def get(self):
         """获取人材机一级分类列表"""
         page = request.args.get('page', 1, type=int)
@@ -514,8 +555,8 @@ class RcjYjflListResource(Resource):
             dto = RcjYjflRequestDTO(**data)
             result = self.dict_service.create_rcj_yjfl(dto)
             return result.to_dict(), 201
-        except ValueError as e:
-            err = ErrorResponse(code=ErrorCode.DUPLICATE_ENTRY, message=str(e))
+        except (ValueError, TypeError) as e:
+            err = ErrorResponse(code=ErrorCode.VALIDATION_ERROR, message='请求数据验证失败', details={'error': str(e)})
             return err.to_dict(), 400
         except Exception as e:
             err = ErrorResponse(code=ErrorCode.INTERNAL_ERROR, message='服务器内部错误', details={'error': str(e)})
@@ -556,8 +597,8 @@ class RcjYjflResource(Resource):
                 err = ErrorResponse(code=ErrorCode.NOT_FOUND, message='一级分类不存在')
                 return err.to_dict(), 404
             return result.to_dict(), 200
-        except ValueError as e:
-            err = ErrorResponse(code=ErrorCode.DUPLICATE_ENTRY, message=str(e))
+        except (ValueError, TypeError) as e:
+            err = ErrorResponse(code=ErrorCode.VALIDATION_ERROR, message='请求数据验证失败', details={'error': str(e)})
             return err.to_dict(), 400
         except Exception as e:
             err = ErrorResponse(code=ErrorCode.INTERNAL_ERROR, message='服务器内部错误', details={'error': str(e)})
@@ -588,7 +629,7 @@ class RcjEjflListResource(Resource):
     @dict_ns.param('page', '页码', type=int, default=1)
     @dict_ns.param('per_page', '每页数量', type=int, default=10)
     @dict_ns.param('yjfl_id', '一级分类ID', type=str)
-    @dict_ns.response(200, '获取成功', [rcj_ejfl_model])
+    @dict_ns.response(200, '获取成功', rcj_ejfl_list_response)
     def get(self):
         """获取人材机二级分类列表"""
         page = request.args.get('page', 1, type=int)
@@ -609,8 +650,8 @@ class RcjEjflListResource(Resource):
             dto = RcjEjflRequestDTO(**data)
             result = self.dict_service.create_rcj_ejfl(dto)
             return result.to_dict(), 201
-        except ValueError as e:
-            err = ErrorResponse(code=ErrorCode.DUPLICATE_ENTRY, message=str(e))
+        except (ValueError, TypeError) as e:
+            err = ErrorResponse(code=ErrorCode.VALIDATION_ERROR, message='请求数据验证失败', details={'error': str(e)})
             return err.to_dict(), 400
         except Exception as e:
             err = ErrorResponse(code=ErrorCode.INTERNAL_ERROR, message='服务器内部错误', details={'error': str(e)})
@@ -651,8 +692,8 @@ class RcjEjflResource(Resource):
                 err = ErrorResponse(code=ErrorCode.NOT_FOUND, message='二级分类不存在')
                 return err.to_dict(), 404
             return result.to_dict(), 200
-        except ValueError as e:
-            err = ErrorResponse(code=ErrorCode.DUPLICATE_ENTRY, message=str(e))
+        except (ValueError, TypeError) as e:
+            err = ErrorResponse(code=ErrorCode.VALIDATION_ERROR, message='请求数据验证失败', details={'error': str(e)})
             return err.to_dict(), 400
         except Exception as e:
             err = ErrorResponse(code=ErrorCode.INTERNAL_ERROR, message='服务器内部错误', details={'error': str(e)})
@@ -683,7 +724,7 @@ class RcjMC2EjflidListResource(Resource):
     @dict_ns.param('page', '页码', type=int, default=1)
     @dict_ns.param('per_page', '每页数量', type=int, default=10)
     @dict_ns.param('ejflid', '二级分类ID', type=str)
-    @dict_ns.response(200, '获取成功', [rcj_mc2ejflid_model])
+    @dict_ns.response(200, '获取成功', rcj_mc2ejflid_list_response)
     def get(self):
         """获取人材机名称映射列表"""
         page = request.args.get('page', 1, type=int)
@@ -704,8 +745,8 @@ class RcjMC2EjflidListResource(Resource):
             dto = RcjMC2EjflidRequestDTO(**data)
             result = self.dict_service.create_rcj_mc2ejflid(dto)
             return result.to_dict(), 201
-        except ValueError as e:
-            err = ErrorResponse(code=ErrorCode.DUPLICATE_ENTRY, message=str(e))
+        except (ValueError, TypeError) as e:
+            err = ErrorResponse(code=ErrorCode.VALIDATION_ERROR, message='请求数据验证失败', details={'error': str(e)})
             return err.to_dict(), 400
         except Exception as e:
             err = ErrorResponse(code=ErrorCode.INTERNAL_ERROR, message='服务器内部错误', details={'error': str(e)})
@@ -746,8 +787,8 @@ class RcjMC2EjflidResource(Resource):
                 err = ErrorResponse(code=ErrorCode.NOT_FOUND, message='映射不存在')
                 return err.to_dict(), 404
             return result.to_dict(), 200
-        except ValueError as e:
-            err = ErrorResponse(code=ErrorCode.DUPLICATE_ENTRY, message=str(e))
+        except (ValueError, TypeError) as e:
+            err = ErrorResponse(code=ErrorCode.VALIDATION_ERROR, message='请求数据验证失败', details={'error': str(e)})
             return err.to_dict(), 400
         except Exception as e:
             err = ErrorResponse(code=ErrorCode.INTERNAL_ERROR, message='服务器内部错误', details={'error': str(e)})
@@ -779,7 +820,7 @@ class RcjMCClassifyListResource(Resource):
     @dict_ns.param('per_page', '每页数量', type=int, default=10)
     @dict_ns.param('yjflid', '一级分类ID', type=str)
     @dict_ns.param('ejflid', '二级分类ID', type=str)
-    @dict_ns.response(200, '获取成功', [rcj_mc_classify_model])
+    @dict_ns.response(200, '获取成功', rcj_mc_classify_list_response)
     def get(self):
         """获取人材机名称分类列表"""
         page = request.args.get('page', 1, type=int)
@@ -801,8 +842,8 @@ class RcjMCClassifyListResource(Resource):
             dto = RcjMCClassifyRequestDTO(**data)
             result = self.dict_service.create_rcj_mc_classify(dto)
             return result.to_dict(), 201
-        except ValueError as e:
-            err = ErrorResponse(code=ErrorCode.DUPLICATE_ENTRY, message=str(e))
+        except (ValueError, TypeError) as e:
+            err = ErrorResponse(code=ErrorCode.VALIDATION_ERROR, message='请求数据验证失败', details={'error': str(e)})
             return err.to_dict(), 400
         except Exception as e:
             err = ErrorResponse(code=ErrorCode.INTERNAL_ERROR, message='服务器内部错误', details={'error': str(e)})
@@ -843,8 +884,8 @@ class RcjMCClassifyResource(Resource):
                 err = ErrorResponse(code=ErrorCode.NOT_FOUND, message='分类不存在')
                 return err.to_dict(), 404
             return result.to_dict(), 200
-        except ValueError as e:
-            err = ErrorResponse(code=ErrorCode.DUPLICATE_ENTRY, message=str(e))
+        except (ValueError, TypeError) as e:
+            err = ErrorResponse(code=ErrorCode.VALIDATION_ERROR, message='请求数据验证失败', details={'error': str(e)})
             return err.to_dict(), 400
         except Exception as e:
             err = ErrorResponse(code=ErrorCode.INTERNAL_ERROR, message='服务器内部错误', details={'error': str(e)})
