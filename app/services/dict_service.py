@@ -23,10 +23,10 @@ from app.dto.dict import (
     # 人材机名称映射 DTO
     RcjMC2EjflidRequestDTO, RcjMC2EjflidUpdateRequestDTO, RcjMC2EjflidResponseDTO, RcjMC2EjflidInternalDTO,
     # 人材机名称分类 DTO
-    RcjMCClassifyRequestDTO, RcjMCClassifyUpdateRequestDTO, RcjMCClassifyResponseDTO, RcjMCClassifyInternalDTO,
-    # 通用 DTO
-    PaginationMeta, PaginatedResponse
+    RcjMCClassifyRequestDTO, RcjMCClassifyUpdateRequestDTO, RcjMCClassifyResponseDTO, RcjMCClassifyInternalDTO
 )
+from app.dto.common import PaginatedResponse, PaginationMeta
+from app.utils.response_builder import ResponseBuilder
 from app.services.base_service import BaseService
 
 
@@ -35,7 +35,7 @@ class DictService(BaseService):
     
     # ==================== 单位类别服务 ====================
     
-    def get_dw_types(self, page: int = 1, per_page: int = 10) -> PaginatedResponse:
+    def get_dw_types(self, page: int = 1, per_page: int = 10) -> PaginatedResponse[DwTypeResponseDTO]:
         """获取单位类别列表"""
         self.log_service_call("get_dw_types", page=page, per_page=per_page)
         
@@ -55,16 +55,8 @@ class DictService(BaseService):
                 for dw_type in pagination.items
             ]
             
-            meta = PaginationMeta(
-                page=pagination.page,
-                per_page=pagination.per_page,
-                total=pagination.total,
-                pages=pagination.pages,
-                has_next=pagination.has_next,
-                has_prev=pagination.has_prev
-            )
-            
-            result = PaginatedResponse(data=dw_types_dto, meta=meta)
+            # 使用响应构建器创建分页响应
+            result = ResponseBuilder.from_pagination(pagination, dw_types_dto)
             self.log_service_result("get_dw_types", result, total_count=pagination.total)
             return result
             
@@ -202,7 +194,7 @@ class DictService(BaseService):
     
     # ==================== 单位服务 ====================
     
-    def get_dws(self, page: int = 1, per_page: int = 10, type_id: Optional[str] = None) -> PaginatedResponse:
+    def get_dws(self, page: int = 1, per_page: int = 10, type_id: Optional[str] = None) -> PaginatedResponse[DwResponseDTO]:
         """获取单位列表"""
         self.log_service_call("get_dws", page=page, per_page=per_page, type_id=type_id)
         
@@ -238,16 +230,8 @@ class DictService(BaseService):
                 
                 dws_dto.append(dw_dto)
             
-            meta = PaginationMeta(
-                page=pagination.page,
-                per_page=pagination.per_page,
-                total=pagination.total,
-                pages=pagination.pages,
-                has_next=pagination.has_next,
-                has_prev=pagination.has_prev
-            )
-            
-            result = PaginatedResponse(data=dws_dto, meta=meta)
+            # 使用响应构建器创建分页响应
+            result = ResponseBuilder.from_pagination(pagination, dws_dto)
             self.log_service_result("get_dws", result, total_count=pagination.total)
             return result
             
@@ -380,7 +364,7 @@ class DictService(BaseService):
     
     # ==================== 人材机二级分类属性服务 ====================
     
-    def get_rcj_ejfl_sxs(self, page: int = 1, per_page: int = 10) -> PaginatedResponse:
+    def get_rcj_ejfl_sxs(self, page: int = 1, per_page: int = 10) -> PaginatedResponse[RcjEjflSxResponseDTO]:
         """获取人材机二级分类属性列表"""
         pagination = RcjEjflSx.query.paginate(
             page=page, per_page=per_page, error_out=False
@@ -397,16 +381,8 @@ class DictService(BaseService):
             for sx in pagination.items
         ]
         
-        meta = PaginationMeta(
-            page=pagination.page,
-            per_page=pagination.per_page,
-            total=pagination.total,
-            pages=pagination.pages,
-            has_next=pagination.has_next,
-            has_prev=pagination.has_prev
-        )
-        
-        return PaginatedResponse(data=sxs_dto, meta=meta)
+        # 使用响应构建器创建分页响应
+        return ResponseBuilder.from_pagination(pagination, sxs_dto)
     
     def get_rcj_ejfl_sx_by_id(self, sx_id: str) -> Optional[RcjEjflSxResponseDTO]:
         """根据ID获取人材机二级分类属性"""
@@ -484,7 +460,7 @@ class DictService(BaseService):
     
     # ==================== 人材机一级分类服务 ====================
     
-    def get_rcj_yjfls(self, page: int = 1, per_page: int = 10) -> PaginatedResponse:
+    def get_rcj_yjfls(self, page: int = 1, per_page: int = 10) -> PaginatedResponse[RcjYjflResponseDTO]:
         """获取人材机一级分类列表"""
         pagination = RcjYjfl.query.paginate(
             page=page, per_page=per_page, error_out=False
@@ -502,16 +478,8 @@ class DictService(BaseService):
             for yjfl in pagination.items
         ]
         
-        meta = PaginationMeta(
-            page=pagination.page,
-            per_page=pagination.per_page,
-            total=pagination.total,
-            pages=pagination.pages,
-            has_next=pagination.has_next,
-            has_prev=pagination.has_prev
-        )
-        
-        return PaginatedResponse(data=yjfls_dto, meta=meta)
+        # 使用响应构建器创建分页响应
+        return ResponseBuilder.from_pagination(pagination, yjfls_dto)
     
     def get_rcj_yjfl_by_id(self, yjfl_id: str) -> Optional[RcjYjflResponseDTO]:
         """根据ID获取人材机一级分类"""
@@ -596,7 +564,7 @@ class DictService(BaseService):
     
     # ==================== 人材机二级分类服务 ====================
     
-    def get_rcj_ejfls(self, page: int = 1, per_page: int = 10, yjfl_id: Optional[str] = None) -> PaginatedResponse:
+    def get_rcj_ejfls(self, page: int = 1, per_page: int = 10, yjfl_id: Optional[str] = None) -> PaginatedResponse[RcjEjflResponseDTO]:
         """获取人材机二级分类列表"""
         query = RcjEjfl.query
         
@@ -633,16 +601,8 @@ class DictService(BaseService):
             
             ejfls_dto.append(ejfl_dto)
         
-        meta = PaginationMeta(
-            page=pagination.page,
-            per_page=pagination.per_page,
-            total=pagination.total,
-            pages=pagination.pages,
-            has_next=pagination.has_next,
-            has_prev=pagination.has_prev
-        )
-        
-        return PaginatedResponse(data=ejfls_dto, meta=meta)
+        # 使用响应构建器创建分页响应
+        return ResponseBuilder.from_pagination(pagination, ejfls_dto)
     
     def get_rcj_ejfl_by_id(self, ejfl_id: str) -> Optional[RcjEjflResponseDTO]:
         """根据ID获取人材机二级分类"""
@@ -777,7 +737,7 @@ class DictService(BaseService):
     
     # ==================== 人材机名称映射服务 ====================
     
-    def get_rcj_mc2ejflids(self, page: int = 1, per_page: int = 10, ejflid: Optional[str] = None) -> PaginatedResponse:
+    def get_rcj_mc2ejflids(self, page: int = 1, per_page: int = 10, ejflid: Optional[str] = None) -> PaginatedResponse[RcjMC2EjflidResponseDTO]:
         """获取人材机名称映射列表"""
         query = RcjMC2Ejflid.query
         
@@ -800,16 +760,8 @@ class DictService(BaseService):
             for mapping in pagination.items
         ]
         
-        meta = PaginationMeta(
-            page=pagination.page,
-            per_page=pagination.per_page,
-            total=pagination.total,
-            pages=pagination.pages,
-            has_next=pagination.has_next,
-            has_prev=pagination.has_prev
-        )
-        
-        return PaginatedResponse(data=mappings_dto, meta=meta)
+        # 使用响应构建器创建分页响应
+        return ResponseBuilder.from_pagination(pagination, mappings_dto)
     
     def get_rcj_mc2ejflid_by_id(self, mapping_id: int) -> Optional[RcjMC2EjflidResponseDTO]:
         """根据ID获取人材机名称映射"""
@@ -897,7 +849,7 @@ class DictService(BaseService):
     # ==================== 人材机名称分类服务 ====================
     
     def get_rcj_mc_classifies(self, page: int = 1, per_page: int = 10, 
-                            yjflid: Optional[str] = None, ejflid: Optional[str] = None) -> PaginatedResponse:
+                            yjflid: Optional[str] = None, ejflid: Optional[str] = None) -> PaginatedResponse[RcjMCClassifyResponseDTO]:
         """获取人材机名称分类列表"""
         query = RcjMCClassify.query
         
@@ -926,16 +878,8 @@ class DictService(BaseService):
             for classify in pagination.items
         ]
         
-        meta = PaginationMeta(
-            page=pagination.page,
-            per_page=pagination.per_page,
-            total=pagination.total,
-            pages=pagination.pages,
-            has_next=pagination.has_next,
-            has_prev=pagination.has_prev
-        )
-        
-        return PaginatedResponse(data=classifies_dto, meta=meta)
+        # 使用响应构建器创建分页响应
+        return ResponseBuilder.from_pagination(pagination, classifies_dto)
     
     def get_rcj_mc_classify_by_id(self, classify_id: int) -> Optional[RcjMCClassifyResponseDTO]:
         """根据ID获取人材机名称分类"""

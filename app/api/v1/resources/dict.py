@@ -24,6 +24,7 @@ from app.dto.dict import (
     ErrorResponse, ErrorCode, PaginatedResponse
 )
 from app.swagger import api
+from app.utils.decorators import paginated_response
 
 # 创建字典管理命名空间
 dict_ns = api.namespace('dict', description='字典管理接口')
@@ -48,6 +49,12 @@ pagination_meta_model = api.model('PaginationMeta', {
     'has_prev': fields.Boolean(description='是否有上一页')
 })
 
+# 通用分页响应模型
+pagination_response_model = api.model('PaginatedResponse', {
+    'data': fields.List(fields.Raw(), description='数据列表'),
+    'meta': fields.Nested(pagination_meta_model, description='分页信息')
+})
+
 # 单位类别模型
 dw_type_model = api.model('DwType', {
     'id': fields.String(required=True, description='单位类别ID'),
@@ -56,10 +63,13 @@ dw_type_model = api.model('DwType', {
     'update_time': fields.DateTime(description='更新时间')
 })
 
-dw_type_list_response = api.model('DwTypeListResponse', {
-    'data': fields.List(fields.Nested(dw_type_model)),
-    'meta': fields.Raw(description='分页信息')
+# 单位类别分页响应模型
+dw_type_pagination_response = api.model('DwTypePaginationResponse', {
+    'data': fields.List(fields.Nested(dw_type_model), description='单位类别列表'),
+    'meta': fields.Nested(pagination_meta_model, description='分页信息')
 })
+
+dw_type_list_response = pagination_response_model
 
 dw_type_create_model = api.model('DwTypeCreate', {
     'id': fields.String(required=True, description='单位类别ID'),
@@ -78,6 +88,12 @@ dw_model = api.model('Dw', {
     'create_time': fields.DateTime(description='创建时间'),
     'update_time': fields.DateTime(description='更新时间'),
     'type': fields.Nested(dw_type_model, description='关联的类别')
+})
+
+# 单位分页响应模型
+dw_pagination_response = api.model('DwPaginationResponse', {
+    'data': fields.List(fields.Nested(dw_model), description='单位列表'),
+    'meta': fields.Nested(pagination_meta_model, description='分页信息')
 })
 
 dw_create_model = api.model('DwCreate', {
@@ -99,6 +115,12 @@ rcj_ejfl_sx_model = api.model('RcjEjflSx', {
     'update_time': fields.DateTime(description='更新时间')
 })
 
+# 人材机二级分类属性分页响应模型
+rcj_ejfl_sx_pagination_response = api.model('RcjEjflSxPaginationResponse', {
+    'data': fields.List(fields.Nested(rcj_ejfl_sx_model), description='人材机二级分类属性列表'),
+    'meta': fields.Nested(pagination_meta_model, description='分页信息')
+})
+
 rcj_ejfl_sx_create_model = api.model('RcjEjflSxCreate', {
     'id': fields.String(required=True, description='属性ID'),
     'sx': fields.String(required=True, description='属性名称')
@@ -115,6 +137,12 @@ rcj_yjfl_model = api.model('RcjYjfl', {
     'yjflms': fields.String(description='一级分类描述'),
     'create_time': fields.DateTime(description='创建时间'),
     'update_time': fields.DateTime(description='更新时间')
+})
+
+# 人材机一级分类分页响应模型
+rcj_yjfl_pagination_response = api.model('RcjYjflPaginationResponse', {
+    'data': fields.List(fields.Nested(rcj_yjfl_model), description='人材机一级分类列表'),
+    'meta': fields.Nested(pagination_meta_model, description='分页信息')
 })
 
 rcj_yjfl_create_model = api.model('RcjYjflCreate', {
@@ -139,6 +167,12 @@ rcj_ejfl_model = api.model('RcjEjfl', {
     'yjfl': fields.Nested(rcj_yjfl_model, description='关联的一级分类'),
     'sxs': fields.List(fields.String(), description='关联的属性列表'),
     'dws': fields.List(fields.String(), description='关联的单位列表')
+})
+
+# 人材机二级分类分页响应模型
+rcj_ejfl_pagination_response = api.model('RcjEjflPaginationResponse', {
+    'data': fields.List(fields.Nested(rcj_ejfl_model), description='人材机二级分类列表'),
+    'meta': fields.Nested(pagination_meta_model, description='分页信息')
 })
 
 rcj_ejfl_create_model = api.model('RcjEjflCreate', {
@@ -167,6 +201,12 @@ rcj_mc2ejflid_model = api.model('RcjMC2Ejflid', {
     'update_time': fields.DateTime(description='更新时间')
 })
 
+# 人材机名称映射分页响应模型
+rcj_mc2ejflid_pagination_response = api.model('RcjMC2EjflidPaginationResponse', {
+    'data': fields.List(fields.Nested(rcj_mc2ejflid_model), description='人材机名称映射列表'),
+    'meta': fields.Nested(pagination_meta_model, description='分页信息')
+})
+
 rcj_mc2ejflid_create_model = api.model('RcjMC2EjflidCreate', {
     'ejflid': fields.String(required=True, description='二级分类ID'),
     'orignal_rcjmc': fields.String(required=True, description='原始人材机名称')
@@ -189,6 +229,12 @@ rcj_mc_classify_model = api.model('RcjMCClassify', {
     'update_time': fields.DateTime(description='更新时间')
 })
 
+# 人材机名称分类分页响应模型
+rcj_mc_classify_pagination_response = api.model('RcjMCClassifyPaginationResponse', {
+    'data': fields.List(fields.Nested(rcj_mc_classify_model), description='人材机名称分类列表'),
+    'meta': fields.Nested(pagination_meta_model, description='分页信息')
+})
+
 rcj_mc_classify_create_model = api.model('RcjMCClassifyCreate', {
     'cleaned_rcj_original_mc': fields.String(required=True, description='清洗后的人材机名称'),
     'yjflid': fields.String(description='一级分类ID'),
@@ -205,41 +251,13 @@ rcj_mc_classify_update_model = api.model('RcjMCClassifyUpdate', {
     'ejflmc': fields.String(description='二级分类名称')
 })
 
-# 单位分页响应模型
-dw_list_response = api.model('DwListResponse', {
-    'data': fields.List(fields.Nested(dw_model)),
-    'meta': fields.Raw(description='分页信息')
-})
-
-# 属性分页响应模型
-rcj_ejfl_sx_list_response = api.model('RcjEjflSxListResponse', {
-    'data': fields.List(fields.Nested(rcj_ejfl_sx_model)),
-    'meta': fields.Raw(description='分页信息')
-})
-
-# 一级分类分页响应模型
-rcj_yjfl_list_response = api.model('RcjYjflListResponse', {
-    'data': fields.List(fields.Nested(rcj_yjfl_model)),
-    'meta': fields.Raw(description='分页信息')
-})
-
-# 二级分类分页响应模型
-rcj_ejfl_list_response = api.model('RcjEjflListResponse', {
-    'data': fields.List(fields.Nested(rcj_ejfl_model)),
-    'meta': fields.Raw(description='分页信息')
-})
-
-# 名称映射分页响应模型
-rcj_mc2ejflid_list_response = api.model('RcjMC2EjflidListResponse', {
-    'data': fields.List(fields.Nested(rcj_mc2ejflid_model)),
-    'meta': fields.Raw(description='分页信息')
-})
-
-# 名称分类分页响应模型
-rcj_mc_classify_list_response = api.model('RcjMCClassifyListResponse', {
-    'data': fields.List(fields.Nested(rcj_mc_classify_model)),
-    'meta': fields.Raw(description='分页信息')
-})
+# 使用专门的分页响应模型
+dw_list_response = dw_pagination_response
+rcj_ejfl_sx_list_response = rcj_ejfl_sx_pagination_response
+rcj_yjfl_list_response = rcj_yjfl_pagination_response
+rcj_ejfl_list_response = rcj_ejfl_pagination_response
+rcj_mc2ejflid_list_response = rcj_mc2ejflid_pagination_response
+rcj_mc_classify_list_response = rcj_mc_classify_pagination_response
 
 # ==================== 单位类别管理 ====================
 
@@ -254,14 +272,15 @@ class DwTypeListResource(Resource):
     @dict_ns.doc('获取单位类别列表')
     @dict_ns.param('page', '页码', type=int, default=1)
     @dict_ns.param('per_page', '每页数量', type=int, default=10)
-    @dict_ns.response(200, '获取成功', dw_type_list_response)
+    @dict_ns.response(200, '获取成功', dw_type_pagination_response)
+    @paginated_response
     def get(self):
         """获取单位类别列表"""
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('per_page', 10, type=int)
         
         result = self.dict_service.get_dw_types(page=page, per_page=per_page)
-        return {"data": [item.to_dict() for item in result.data], "meta": result.meta.to_dict()}, 200
+        return result, 200
     
     @dict_ns.doc('创建单位类别')
     @dict_ns.expect(dw_type_create_model)
@@ -348,7 +367,8 @@ class DwListResource(Resource):
     @dict_ns.param('page', '页码', type=int, default=1)
     @dict_ns.param('per_page', '每页数量', type=int, default=10)
     @dict_ns.param('type_id', '类别ID', type=str)
-    @dict_ns.response(200, '获取成功', dw_list_response)
+    @dict_ns.response(200, '获取成功', dw_pagination_response)
+    @paginated_response
     def get(self):
         """获取单位列表"""
         page = request.args.get('page', 1, type=int)
@@ -356,7 +376,7 @@ class DwListResource(Resource):
         type_id = request.args.get('type_id')
         
         result = self.dict_service.get_dws(page=page, per_page=per_page, type_id=type_id)
-        return {"data": [item.to_dict() for item in result.data], "meta": result.meta.to_dict()}, 200
+        return result, 200
     
     @dict_ns.doc('创建单位')
     @dict_ns.expect(dw_create_model)
@@ -442,14 +462,15 @@ class RcjEjflSxListResource(Resource):
     @dict_ns.doc('获取人材机二级分类属性列表')
     @dict_ns.param('page', '页码', type=int, default=1)
     @dict_ns.param('per_page', '每页数量', type=int, default=10)
-    @dict_ns.response(200, '获取成功', rcj_ejfl_sx_list_response)
+    @dict_ns.response(200, '获取成功', rcj_ejfl_sx_pagination_response)
+    @paginated_response
     def get(self):
         """获取人材机二级分类属性列表"""
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('per_page', 10, type=int)
         
         result = self.dict_service.get_rcj_ejfl_sxs(page=page, per_page=per_page)
-        return {"data": [item.to_dict() for item in result.data], "meta": result.meta.to_dict()}, 200
+        return result, 200
     
     @dict_ns.doc('创建人材机二级分类属性')
     @dict_ns.expect(rcj_ejfl_sx_create_model)
@@ -535,14 +556,15 @@ class RcjYjflListResource(Resource):
     @dict_ns.doc('获取人材机一级分类列表')
     @dict_ns.param('page', '页码', type=int, default=1)
     @dict_ns.param('per_page', '每页数量', type=int, default=10)
-    @dict_ns.response(200, '获取成功', rcj_yjfl_list_response)
+    @dict_ns.response(200, '获取成功', rcj_yjfl_pagination_response)
+    @paginated_response
     def get(self):
         """获取人材机一级分类列表"""
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('per_page', 10, type=int)
         
         result = self.dict_service.get_rcj_yjfls(page=page, per_page=per_page)
-        return {"data": [item.to_dict() for item in result.data], "meta": result.meta.to_dict()}, 200
+        return result, 200
     
     @dict_ns.doc('创建人材机一级分类')
     @dict_ns.expect(rcj_yjfl_create_model)
@@ -629,7 +651,8 @@ class RcjEjflListResource(Resource):
     @dict_ns.param('page', '页码', type=int, default=1)
     @dict_ns.param('per_page', '每页数量', type=int, default=10)
     @dict_ns.param('yjfl_id', '一级分类ID', type=str)
-    @dict_ns.response(200, '获取成功', rcj_ejfl_list_response)
+    @dict_ns.response(200, '获取成功', rcj_ejfl_pagination_response)
+    @paginated_response
     def get(self):
         """获取人材机二级分类列表"""
         page = request.args.get('page', 1, type=int)
@@ -637,7 +660,7 @@ class RcjEjflListResource(Resource):
         yjfl_id = request.args.get('yjfl_id')
         
         result = self.dict_service.get_rcj_ejfls(page=page, per_page=per_page, yjfl_id=yjfl_id)
-        return {"data": [item.to_dict() for item in result.data], "meta": result.meta.to_dict()}, 200
+        return result, 200
     
     @dict_ns.doc('创建人材机二级分类')
     @dict_ns.expect(rcj_ejfl_create_model)
@@ -724,7 +747,8 @@ class RcjMC2EjflidListResource(Resource):
     @dict_ns.param('page', '页码', type=int, default=1)
     @dict_ns.param('per_page', '每页数量', type=int, default=10)
     @dict_ns.param('ejflid', '二级分类ID', type=str)
-    @dict_ns.response(200, '获取成功', rcj_mc2ejflid_list_response)
+    @dict_ns.response(200, '获取成功', rcj_mc2ejflid_pagination_response)
+    @paginated_response
     def get(self):
         """获取人材机名称映射列表"""
         page = request.args.get('page', 1, type=int)
@@ -732,7 +756,7 @@ class RcjMC2EjflidListResource(Resource):
         ejflid = request.args.get('ejflid')
         
         result = self.dict_service.get_rcj_mc2ejflids(page=page, per_page=per_page, ejflid=ejflid)
-        return {"data": [item.to_dict() for item in result.data], "meta": result.meta.to_dict()}, 200
+        return result, 200
     
     @dict_ns.doc('创建人材机名称映射')
     @dict_ns.expect(rcj_mc2ejflid_create_model)
@@ -820,7 +844,8 @@ class RcjMCClassifyListResource(Resource):
     @dict_ns.param('per_page', '每页数量', type=int, default=10)
     @dict_ns.param('yjflid', '一级分类ID', type=str)
     @dict_ns.param('ejflid', '二级分类ID', type=str)
-    @dict_ns.response(200, '获取成功', rcj_mc_classify_list_response)
+    @dict_ns.response(200, '获取成功', rcj_mc_classify_pagination_response)
+    @paginated_response
     def get(self):
         """获取人材机名称分类列表"""
         page = request.args.get('page', 1, type=int)
@@ -829,7 +854,7 @@ class RcjMCClassifyListResource(Resource):
         ejflid = request.args.get('ejflid')
         
         result = self.dict_service.get_rcj_mc_classifies(page=page, per_page=per_page, yjflid=yjflid, ejflid=ejflid)
-        return {"data": [item.to_dict() for item in result.data], "meta": result.meta.to_dict()}, 200
+        return result, 200
     
     @dict_ns.doc('创建人材机名称分类')
     @dict_ns.expect(rcj_mc_classify_create_model)
