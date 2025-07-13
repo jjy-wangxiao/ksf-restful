@@ -69,8 +69,6 @@ dw_type_pagination_response = api.model('DwTypePaginationResponse', {
     'meta': fields.Nested(pagination_meta_model, description='分页信息')
 })
 
-dw_type_list_response = pagination_response_model
-
 dw_type_create_model = api.model('DwTypeCreate', {
     'id': fields.String(required=True, description='单位类别ID'),
     'typeName': fields.String(required=True, description='类别名称')
@@ -252,12 +250,6 @@ rcj_mc_classify_update_model = api.model('RcjMCClassifyUpdate', {
 })
 
 # 使用专门的分页响应模型
-dw_list_response = dw_pagination_response
-rcj_ejfl_sx_list_response = rcj_ejfl_sx_pagination_response
-rcj_yjfl_list_response = rcj_yjfl_pagination_response
-rcj_ejfl_list_response = rcj_ejfl_pagination_response
-rcj_mc2ejflid_list_response = rcj_mc2ejflid_pagination_response
-rcj_mc_classify_list_response = rcj_mc_classify_pagination_response
 
 # ==================== 单位类别管理 ====================
 
