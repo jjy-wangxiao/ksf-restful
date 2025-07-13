@@ -405,33 +405,37 @@ class YourModuleResource(Resource):
         return ResponseBuilder.build_success_response({'message': '删除成功'})
 ```
 
-### 第五步：注册API路由
+### 第五步：注册API资源
 
-在 `app/api/v1/__init__.py` 中注册新的命名空间：
+在 `app/swagger.py` 中导入你的资源类即可，无需手动调用 `api.add_namespace()`。
 
 ```python
-# app/api/v1/__init__.py
+# app/swagger.py
+from flask_restx import Api, fields
 from flask import Blueprint
-from flask_restx import Api
-from app.api.v1.resources.dict import dict_ns
-from app.api.v1.resources.your_module import your_module_ns  # 新增
 
-# 创建蓝图
-api_v1_bp = Blueprint('api_v1', __name__, url_prefix='/api/v1')
+# 创建 API 蓝图
+api_blueprint = Blueprint('api', __name__)
 
-# 创建API实例
+# 创建 API 实例
 api = Api(
-    api_v1_bp,
+    api_blueprint,
     title='KSF RESTful API',
     version='1.0',
     description='KSF项目RESTful API文档',
     doc='/docs'
 )
 
-# 添加命名空间
-api.add_namespace(dict_ns)
-api.add_namespace(your_module_ns)  # 新增
+# 导入所有资源类（自动注册到命名空间）
+from app.api.v1.resources.dict import dict_ns
+from app.api.v1.resources.your_module import your_module_ns  # 新增
+# 只需导入资源类文件，所有 @your_module_ns.route 装饰的资源会自动注册到api
 ```
+
+> **注意：**
+> - 只需在 `app/api/v1/resources/your_module.py` 中定义 `your_module_ns = api.namespace(...)` 并用 `@your_module_ns.route` 装饰资源类。
+> - 在 `app/swagger.py` 导入该资源文件即可，Flask-RESTX 会自动注册所有路由。
+> - 不需要在 `app/api/v1/__init__.py` 或其他地方手动调用 `api.add_namespace()`。
 
 ### 第六步：创建数据库迁移
 
