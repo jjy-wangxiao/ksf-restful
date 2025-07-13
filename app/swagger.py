@@ -39,9 +39,6 @@ pagination_model = api.model('Pagination', {
 })
 
 # 导入所有资源 - 这很重要！
-from app.api.v1.resources.auth import AuthResource, RefreshResource
-from app.api.v1.resources.users import UserListResource, UserResource
-from app.api.v1.resources.posts import PostListResource, PostResource
 from app.api.v1.resources.dict import (
     DwTypeListResource, DwTypeResource,
     DwListResource, DwResource,
