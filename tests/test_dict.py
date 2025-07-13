@@ -61,14 +61,14 @@ class TestDwTypeAPI:
     def test_create_dw_type(self, client):
         """测试创建单位类别"""
         response = client.post('/api/v1/dict/dw-types', json={
-            'id': '01',
-            'typeName': '重量'
+            'id': '00',
+            'typeName': '无类别'
         })
         assert response.status_code == 201
         data = response.get_json()
         assert data['message'] == '单位类别创建成功'
-        assert data['dw_type']['id'] == '01'
-        assert data['dw_type']['typeName'] == '重量'
+        assert data['dw_type']['id'] == '00'
+        assert data['dw_type']['typeName'] == '无类别'
     
     def test_get_dw_type(self, client, dw_type):
         """测试获取单个单位类别"""

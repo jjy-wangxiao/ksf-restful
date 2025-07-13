@@ -12,7 +12,7 @@ db = SQLAlchemy()
 migrate = Migrate()
 limiter = Limiter(
     key_func=get_remote_address,
-    default_limits=["200 per day", "50 per hour"]
+    default_limits=["2000 per day", "500 per hour"]
 )
 
 load_dotenv()  # 自动加载 .env 文件

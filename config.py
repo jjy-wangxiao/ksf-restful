@@ -55,7 +55,7 @@ class ProductionConfig(Config):
             app.logger.setLevel(logging.INFO)
             app.logger.info('KSF RESTful startup')
 
-class XMLConfig(Config):
+class XmlConfig(Config):
     """开发环境配置"""
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('XML_DATABASE_URL') or \
@@ -73,6 +73,6 @@ config = {
     'testing': TestingConfig,
     'production': ProductionConfig,
     'default': DevelopmentConfig,
-    'xml': XMLConfig,
+    'xml': XmlConfig,
     'dict': DictConfig
 } 

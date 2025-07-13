@@ -24,9 +24,7 @@ dict_ns = api.namespace('dict', description='字典管理接口')
 # 定义Swagger模型
 dw_type_model = api.model('DwType', {
     'id': fields.String(required=True, description='单位类别ID'),
-    'typeName': fields.String(required=True, description='类别名称'),
-    'create_time': fields.DateTime(description='创建时间'),
-    'update_time': fields.DateTime(description='更新时间')
+    'typeName': fields.String(required=True, description='类别名称')
 })
 
 dw_type_create_model = api.model('DwTypeCreate', {
@@ -35,6 +33,7 @@ dw_type_create_model = api.model('DwTypeCreate', {
 })
 
 dw_type_update_model = api.model('DwTypeUpdate', {
+    'id': fields.String(required=True, description='单位类别ID'),
     'typeName': fields.String(description='类别名称')
 })
 
@@ -230,6 +229,7 @@ class DwTypeListResource(Resource):
     @validate_json
     def post(self):
         """创建单位类别"""
+        # print(request.get_json())
         data = request.get_json()
         
         # 验证数据
