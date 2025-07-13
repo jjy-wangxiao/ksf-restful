@@ -120,6 +120,28 @@ python manage.py test
 python manage.py generate-fake-data
 ```
 
+### 数据库管理
+
+```bash
+# 初始化migration系统（首次使用）
+python manage.py init_migrations
+
+# 生成新的迁移
+python manage.py migrate -m "描述变更"
+
+# 应用迁移
+python manage.py upgrade
+
+# 回滚迁移
+python manage.py downgrade
+
+# 查看迁移历史
+python manage.py history
+
+# 检查数据库连接
+python manage.py check
+```
+
 ### Git 工作流
 
 项目使用 pre-commit 钩子确保代码质量：

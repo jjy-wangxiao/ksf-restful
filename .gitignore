@@ -143,4 +143,7 @@ dmypy.json
 .pytest_cache/
 
 # pre-commit
-.pre-commit-config.yaml.bak 
+.pre-commit-config.yaml.bak
+
+# Database migration files (keep these in version control)
+# migrations/versions/*.py 

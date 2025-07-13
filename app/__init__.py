@@ -8,6 +8,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_restx import Api
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from config import config
 import json
 from datetime import datetime
@@ -15,6 +16,9 @@ from enum import Enum
 
 # 初始化SQLAlchemy
 db = SQLAlchemy()
+
+# 初始化Flask-Migrate
+migrate = Migrate()
 
 class CustomJSONEncoder(json.JSONEncoder):
     """自定义JSON编码器，支持DTO和枚举序列化"""
@@ -59,6 +63,9 @@ def create_app(config_name=None):
     
     # 初始化SQLAlchemy
     db.init_app(app)
+    
+    # 初始化Flask-Migrate
+    migrate.init_app(app, db)
     
     # 初始化扩展
     CORS(app)
