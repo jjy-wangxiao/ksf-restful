@@ -578,6 +578,10 @@ class DictService(BaseService):
         # 转换为DTO
         ejfls_dto = []
         for ejfl in pagination.items:
+            # 将 _AssociationList 转换为普通列表
+            sxs_list = list(ejfl.sxs) if ejfl.sxs else []
+            dws_list = list(ejfl.dws) if ejfl.dws else []
+            
             ejfl_dto = RcjEjflResponseDTO(
                 id=ejfl.id,
                 yjfl_id=ejfl.yjfl_id,
@@ -585,8 +589,8 @@ class DictService(BaseService):
                 ejflms=ejfl.ejflms,
                 create_time=ejfl.create_time,
                 update_time=ejfl.update_time,
-                sxs=ejfl.sxs or [],
-                dws=ejfl.dws or []
+                sxs=sxs_list,
+                dws=dws_list
             )
             
             # 添加关联的一级分类信息
@@ -610,6 +614,10 @@ class DictService(BaseService):
         if not ejfl:
             return None
         
+        # 将 _AssociationList 转换为普通列表
+        sxs_list = list(ejfl.sxs) if ejfl.sxs else []
+        dws_list = list(ejfl.dws) if ejfl.dws else []
+        
         ejfl_dto = RcjEjflResponseDTO(
             id=ejfl.id,
             yjfl_id=ejfl.yjfl_id,
@@ -617,8 +625,8 @@ class DictService(BaseService):
             ejflms=ejfl.ejflms,
             create_time=ejfl.create_time,
             update_time=ejfl.update_time,
-            sxs=ejfl.sxs or [],
-            dws=ejfl.dws or []
+            sxs=sxs_list,
+            dws=dws_list
         )
         
         # 添加关联的一级分类信息
@@ -667,6 +675,10 @@ class DictService(BaseService):
         db.session.add(ejfl)
         db.session.commit()
         
+        # 将 _AssociationList 转换为普通列表
+        sxs_list = list(ejfl.sxs) if ejfl.sxs else []
+        dws_list = list(ejfl.dws) if ejfl.dws else []
+        
         # 返回响应DTO
         return RcjEjflResponseDTO(
             id=ejfl.id,
@@ -675,8 +687,8 @@ class DictService(BaseService):
             ejflms=ejfl.ejflms,
             create_time=ejfl.create_time,
             update_time=ejfl.update_time,
-            sxs=ejfl.sxs or [],
-            dws=ejfl.dws or []
+            sxs=sxs_list,
+            dws=dws_list
         )
     
     def update_rcj_ejfl(self, ejfl_id: str, dto: RcjEjflUpdateRequestDTO) -> Optional[RcjEjflResponseDTO]:
@@ -713,6 +725,10 @@ class DictService(BaseService):
         
         db.session.commit()
         
+        # 将 _AssociationList 转换为普通列表
+        sxs_list = list(ejfl.sxs) if ejfl.sxs else []
+        dws_list = list(ejfl.dws) if ejfl.dws else []
+        
         # 返回响应DTO
         return RcjEjflResponseDTO(
             id=ejfl.id,
@@ -721,8 +737,8 @@ class DictService(BaseService):
             ejflms=ejfl.ejflms,
             create_time=ejfl.create_time,
             update_time=ejfl.update_time,
-            sxs=ejfl.sxs or [],
-            dws=ejfl.dws or []
+            sxs=sxs_list,
+            dws=dws_list
         )
     
     def delete_rcj_ejfl(self, ejfl_id: str) -> bool:

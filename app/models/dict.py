@@ -13,7 +13,7 @@ class DwType(db.Model):
         {'comment': '单位类别,定义单位所属类别，00为无类别，01为重量，02为长度，03为面积，04为体积，05为数量等'}
     )
     id: Mapped[str] = mapped_column(String(2), primary_key=True)
-    typeName: Mapped[Optional[str]] = mapped_column(String(10),index=True,unique=True)
+    typeName: Mapped[Optional[str]] = mapped_column(String(50),index=True,unique=True)
     create_time: Mapped[DateTime] = mapped_column(DateTime, default=datetime.now, nullable=False)
     update_time: Mapped[DateTime] = mapped_column(DateTime, default=datetime.now, onupdate=datetime.now, nullable=False)
 
@@ -32,7 +32,7 @@ class Dw(db.Model):
 
     id: Mapped[str] = mapped_column(String(4), primary_key=True)
     type_id: Mapped[Optional[str]] = mapped_column(ForeignKey('dict_dw_type.id'),index=True)
-    dw: Mapped[Optional[str]] = mapped_column(String(10),unique=True,index=True)
+    dw: Mapped[Optional[str]] = mapped_column(String(50),unique=True,index=True)
 
     create_time: Mapped[DateTime] = mapped_column(DateTime, default=datetime.now, nullable=False)
     update_time: Mapped[DateTime] = mapped_column(DateTime, default=datetime.now, onupdate=datetime.now, nullable=False)
@@ -50,7 +50,7 @@ class RcjEjflSx(db.Model):
 
     # 四位数字字符串
     id: Mapped[str] = mapped_column(String(4), primary_key=True)
-    sx: Mapped[Optional[str]] = mapped_column(String(10),unique=True,index=True)
+    sx: Mapped[Optional[str]] = mapped_column(String(100),unique=True,index=True)
 
     create_time: Mapped[DateTime] = mapped_column(DateTime, default=datetime.now, nullable=False)
     update_time: Mapped[DateTime] = mapped_column(DateTime, default=datetime.now, onupdate=datetime.now, nullable=False)
@@ -67,7 +67,7 @@ class RcjYjfl(db.Model):
     # 四位数字字符串，为rcj一级分类id,基本信息
     id: Mapped[str] = mapped_column(String(4), primary_key=True)
     yjflmc: Mapped[Optional[str]] = mapped_column(String(100),index=True,unique=True)
-    yjflms: Mapped[Optional[str]] = mapped_column(String(100))
+    yjflms: Mapped[Optional[str]] = mapped_column(String(1024))
 
     create_time: Mapped[DateTime] = mapped_column(DateTime, default=datetime.now, nullable=False)
     update_time: Mapped[DateTime] = mapped_column(DateTime, default=datetime.now, onupdate=datetime.now, nullable=False)
@@ -108,7 +108,7 @@ class RcjEjfl(db.Model):
     id: Mapped[str] = mapped_column(String(4), primary_key=True)
     yjfl_id: Mapped[Optional[str]] = mapped_column(String(2),ForeignKey('dict_rcjyjfl.id'),index=True)
     ejflmc: Mapped[Optional[str]] = mapped_column(String(100),index=True)
-    ejflms: Mapped[Optional[str]] = mapped_column(String(100))
+    ejflms: Mapped[Optional[str]] = mapped_column(String(1024))
 
     create_time: Mapped[DateTime] = mapped_column(DateTime, default=datetime.now, nullable=False)
     update_time: Mapped[DateTime] = mapped_column(DateTime, default=datetime.now, onupdate=datetime.now, nullable=False)
@@ -149,7 +149,7 @@ class RcjMC2Ejflid(db.Model):
     # 四位数字字符串
     id: Mapped[Integer] = mapped_column(Integer, primary_key=True)
     ejflid: Mapped[Optional[str]] = mapped_column(String(4),index=True)
-    orignal_rcjmc: Mapped[Optional[str]] = mapped_column(String(50),index=True)
+    orignal_rcjmc: Mapped[Optional[str]] = mapped_column(String(300),index=True)
     create_time: Mapped[DateTime] = mapped_column(DateTime, default=datetime.now, nullable=False)
     update_time: Mapped[DateTime] = mapped_column(DateTime, default=datetime.now, onupdate=datetime.now, nullable=False)
 
@@ -164,11 +164,11 @@ class RcjMCClassify(db.Model):
 
     # 四位数字字符串
     id: Mapped[Integer] = mapped_column(Integer, primary_key=True)
-    cleaned_rcj_original_mc: Mapped[Optional[str]] = mapped_column(String(100),unique=True,index=True,comment='对原始人材机名称进行清洗后的名称')
+    cleaned_rcj_original_mc: Mapped[Optional[str]] = mapped_column(String(300),unique=True,index=True,comment='对原始人材机名称进行清洗后的名称')
     yjflid: Mapped[Optional[str]] = mapped_column(String(2),index=True,comment='一级分类id')
-    yjflmc: Mapped[Optional[str]] = mapped_column(String(10),comment='一级分类名称')    
+    yjflmc: Mapped[Optional[str]] = mapped_column(String(100),comment='一级分类名称')    
     ejflid: Mapped[Optional[str]] = mapped_column(String(4),index=True,comment='二级分类id')
-    ejflmc: Mapped[Optional[str]] = mapped_column(String(10),index=True,comment='二级分类名称')
+    ejflmc: Mapped[Optional[str]] = mapped_column(String(100),index=True,comment='二级分类名称')
     create_time: Mapped[DateTime] = mapped_column(DateTime, default=datetime.now, nullable=False)
     update_time: Mapped[DateTime] = mapped_column(DateTime, default=datetime.now, onupdate=datetime.now, nullable=False)
 

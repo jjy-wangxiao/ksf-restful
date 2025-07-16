@@ -748,6 +748,7 @@ class RcjMC2EjflidListResource(Resource):
         ejflid = request.args.get('ejflid')
         
         result = self.dict_service.get_rcj_mc2ejflids(page=page, per_page=per_page, ejflid=ejflid)
+        # print(result)
         return result, 200
     
     @dict_ns.doc('创建人材机名称映射')
@@ -846,6 +847,9 @@ class RcjMCClassifyListResource(Resource):
         ejflid = request.args.get('ejflid')
         
         result = self.dict_service.get_rcj_mc_classifies(page=page, per_page=per_page, yjflid=yjflid, ejflid=ejflid)
+        print(f"-"*100)
+        print(result)
+        print(f"-"*100)
         return result, 200
     
     @dict_ns.doc('创建人材机名称分类')
