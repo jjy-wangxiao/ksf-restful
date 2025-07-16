@@ -2,7 +2,11 @@
 Flask应用工厂 - 遵循OpenAPI标准的分层架构
 """
 import os
+from dotenv import load_dotenv
 from flask import Flask
+
+# 加载.env文件
+load_dotenv()
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
