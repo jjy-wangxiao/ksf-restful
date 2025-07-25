@@ -30,3 +30,6 @@ from app.api.v1.resources.dict import (
     RcjMC2EjflidListResource, RcjMC2EjflidResource,
     RcjMCClassifyListResource, RcjMCClassifyResource
 ) 
+from app.api.v1.resources.matrix_resources import (
+    FileListResource
+)
