@@ -16,25 +16,35 @@ def test_tree_dto():
     print("=== 测试TreeResponseDTO ===")
     
     # 创建简单的树形结构
-    leaf1 = TreeResponseDTO(title="叶子节点1", key="0-0-0-0")
-    leaf2 = TreeResponseDTO(title="叶子节点2", key="0-0-0-1")
+    leaf1 = TreeResponseDTO(title="叶子节点1", key="0-0-0-0", count=1)
+    leaf2 = TreeResponseDTO(title="叶子节点2", key="0-0-0-1", count=1)
     
     parent1 = TreeResponseDTO(
         title="父节点1-0",
         key="0-0-0",
-        children=[leaf1, leaf2]
+        children=[leaf1, leaf2],
+        count=2
     )
     
     root = TreeResponseDTO(
         title="根节点",
         key="0-0",
-        children=[parent1]
+        children=[parent1],
+        count=2
     )
     
     # 转换为字典
     result = root.to_dict()
     print("TreeResponseDTO转换结果:")
     print(result)
+    print()
+    
+    # 验证数量信息
+    print("验证数量信息:")
+    print(f"  根节点数量: {root.count}")
+    print(f"  父节点数量: {parent1.count}")
+    print(f"  叶子节点1数量: {leaf1.count}")
+    print(f"  叶子节点2数量: {leaf2.count}")
     print()
     
     return result
@@ -265,6 +275,126 @@ def test_sorting_functionality():
     
     print()
 
+def test_count_functionality():
+    """测试数量统计功能"""
+    print("=== 测试数量统计功能 ===")
+    
+    service = MatrixService()
+    
+    # 测试完整分类树的数量统计
+    print("1. 测试完整分类树的数量统计:")
+    try:
+        tree_data = service._build_classification_tree()
+        if tree_data:
+            print(f"   ✅ 成功构建完整分类树，包含 {len(tree_data)} 个一级分类")
+            
+            # 验证数量信息
+            for yjfl_node in tree_data:
+                print(f"   📊 {yjfl_node.title} (count: {yjfl_node.count})")
+                if yjfl_node.children:
+                    for ejfl_node in yjfl_node.children:
+                        print(f"     📊 {ejfl_node.title} (count: {ejfl_node.count})")
+                    
+                    # 验证一级分类数量是否等于子节点数量之和
+                    expected_count = sum(child.count for child in yjfl_node.children)
+                    if yjfl_node.count == expected_count:
+                        print(f"     ✅ 数量统计正确: {yjfl_node.count} = {expected_count}")
+                    else:
+                        print(f"     ❌ 数量统计错误: {yjfl_node.count} ≠ {expected_count}")
+        else:
+            print(f"   ⚠️  未找到分类数据")
+    except Exception as e:
+        print(f"   ❌ 构建失败: {e}")
+    
+    print("\n2. 测试文件分类树的数量统计:")
+    try:
+        tree_data = service._build_file_classification_tree("1")
+        if tree_data:
+            print(f"   ✅ 成功构建文件分类树，包含 {len(tree_data)} 个一级分类")
+            
+            # 验证数量信息
+            for yjfl_node in tree_data:
+                print(f"   📊 {yjfl_node.title} (count: {yjfl_node.count})")
+                if yjfl_node.children:
+                    for ejfl_node in yjfl_node.children:
+                        print(f"     📊 {ejfl_node.title} (count: {ejfl_node.count})")
+                    
+                    # 验证一级分类数量是否等于子节点数量之和
+                    expected_count = sum(child.count for child in yjfl_node.children)
+                    if yjfl_node.count == expected_count:
+                        print(f"     ✅ 数量统计正确: {yjfl_node.count} = {expected_count}")
+                    else:
+                        print(f"     ❌ 数量统计错误: {yjfl_node.count} ≠ {expected_count}")
+        else:
+            print(f"   ⚠️  未找到文件相关数据")
+    except Exception as e:
+        print(f"   ❌ 构建失败: {e}")
+    
+    print()
+
+def test_root_node_functionality():
+    """测试根节点功能"""
+    print("=== 测试根节点功能 ===")
+    
+    service = MatrixService()
+    
+    # 测试完整分类树的根节点
+    print("1. 测试完整分类树的根节点:")
+    try:
+        tree_data = service._build_classification_tree()
+        if tree_data:
+            print(f"   ✅ 成功构建完整分类树，包含 {len(tree_data)} 个根节点")
+            
+            for root_node in tree_data:
+                print(f"   📊 根节点: {root_node.title}")
+                print(f"   🔑 根节点key: {root_node.key}")
+                print(f"   📈 根节点数量: {root_node.count}")
+                print(f"   👶 子节点数量: {len(root_node.children) if root_node.children else 0}")
+                
+                # 验证根节点结构
+                if root_node.key == "root-complete":
+                    print(f"   ✅ 根节点key正确")
+                else:
+                    print(f"   ❌ 根节点key错误: {root_node.key}")
+                
+                if "完整分类树" in root_node.title:
+                    print(f"   ✅ 根节点标题正确")
+                else:
+                    print(f"   ❌ 根节点标题错误: {root_node.title}")
+        else:
+            print(f"   ⚠️  未找到分类数据")
+    except Exception as e:
+        print(f"   ❌ 构建失败: {e}")
+    
+    print("\n2. 测试文件分类树的根节点:")
+    try:
+        tree_data = service._build_file_classification_tree("1")
+        if tree_data:
+            print(f"   ✅ 成功构建文件分类树，包含 {len(tree_data)} 个根节点")
+            
+            for root_node in tree_data:
+                print(f"   📊 根节点: {root_node.title}")
+                print(f"   🔑 根节点key: {root_node.key}")
+                print(f"   📈 根节点数量: {root_node.count}")
+                print(f"   👶 子节点数量: {len(root_node.children) if root_node.children else 0}")
+                
+                # 验证根节点结构
+                if root_node.key.startswith("file-"):
+                    print(f"   ✅ 根节点key正确")
+                else:
+                    print(f"   ❌ 根节点key错误: {root_node.key}")
+                
+                if "文件" in root_node.title:
+                    print(f"   ✅ 根节点标题包含文件名")
+                else:
+                    print(f"   ❌ 根节点标题错误: {root_node.title}")
+        else:
+            print(f"   ⚠️  未找到文件相关数据")
+    except Exception as e:
+        print(f"   ❌ 构建失败: {e}")
+    
+    print()
+
 if __name__ == "__main__":
     print("开始测试树形结构API...\n")
     
@@ -275,6 +405,8 @@ if __name__ == "__main__":
         test_api_response_format()
         test_data_flow()
         test_sorting_functionality()
+        test_count_functionality()
+        test_root_node_functionality()
         
         print("🎉 所有测试完成！")
         print("\n修改说明:")
@@ -287,6 +419,16 @@ if __name__ == "__main__":
         print("   - 一级分类按yjflid排序")
         print("   - 二级分类按ejflid排序")
         print("   - 数据库查询时使用order_by确保排序")
+        print("7. ✅ 实现了数量统计功能")
+        print("   - 二级分类数量：每个二级分类本身算1个")
+        print("   - 一级分类数量：该一级分类下包含多少个二级分类")
+        print("   - 数量信息显示在title中，格式为'名称 (数量)'")
+        print("   - 同时提供count字段供前端使用")
+        print("8. ✅ 实现了根节点功能")
+        print("   - 文件分类树：根节点显示文件名和总数量")
+        print("   - 完整分类树：根节点显示'完整分类树'和总数量")
+        print("   - 根节点key格式：file-{fileid} 或 root-complete")
+        print("   - 根节点数量：所有子节点数量之和")
         
     except Exception as e:
         print(f"❌ 测试过程中出现错误: {e}")

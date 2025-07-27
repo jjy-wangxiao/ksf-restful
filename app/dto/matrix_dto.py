@@ -152,6 +152,7 @@ class TreeResponseDTO:
     title: str
     key: str
     children: Optional[List['TreeResponseDTO']] = None
+    count: Optional[int] = None  # 添加数量字段
     
     def to_dict(self):
         """转换为字典，用于JSON序列化"""
@@ -159,6 +160,8 @@ class TreeResponseDTO:
             'title': self.title,
             'key': self.key
         }
+        if self.count is not None:
+            result['count'] = self.count
         if self.children:
             result['children'] = [child.to_dict() for child in self.children]
         return result

@@ -147,19 +147,27 @@ class MatrixService(BaseService):
                 ejfl_children = []
                 sorted_ejfls = sorted(yjfl_data['ejfls'], key=lambda x: x['ejflid'])
                 for ejfl in sorted_ejfls:
+                    # 统计该二级分类的数量（即该二级分类本身的数量）
+                    ejfl_count = 1  # 每个二级分类本身算1个
+                    
                     ejfl_children.append(
                         TreeResponseDTO(
-                            title=f"{ejfl['ejflid']}-{ejfl['ejflmc']}",
+                            title=f"{ejfl['ejflid']}-{ejfl['ejflmc']} ({ejfl_count})",
                             key=f"ejfl-{ejfl['ejflid']}",
-                            children=[]
+                            children=[],
+                            count=ejfl_count
                         )
                     )
                 
+                # 统计该一级分类下的总数量（即该一级分类下有多少个二级分类）
+                yjfl_total_count = len(ejfl_children)
+                
                 # 构建一级分类节点
                 yjfl_node = TreeResponseDTO(
-                    title=f"{yjfl_data['yjflid']}-{yjfl_data['yjflmc']}",
+                    title=f"{yjfl_data['yjflid']}-{yjfl_data['yjflmc']} ({yjfl_total_count})",
                     key=f"yjfl-{yjfl_data['yjflid']}",
-                    children=ejfl_children
+                    children=ejfl_children,
+                    count=yjfl_total_count
                 )
                 
                 tree_data.append(yjfl_node)
@@ -167,7 +175,22 @@ class MatrixService(BaseService):
             # 按一级分类ID排序
             tree_data.sort(key=lambda x: x.key.split('-')[1])
             
-            return tree_data
+            # 计算总数量（所有一级分类的数量之和）
+            total_count = sum(node.count for node in tree_data)
+            
+            # 获取文件名
+            file_obj = File.query.get(fileid)
+            filename = file_obj.filename if file_obj else f"文件{fileid}"
+            
+            # 创建根节点
+            root_node = TreeResponseDTO(
+                title=f"{filename} ({total_count})",
+                key=f"file-{fileid}",
+                children=tree_data,
+                count=total_count
+            )
+            
+            return [root_node]
             
         except Exception as e:
             self.log_error(e, {"method": "_build_file_classification_tree", "fileid": fileid})
@@ -192,24 +215,43 @@ class MatrixService(BaseService):
                 # 构建二级分类节点
                 ejfl_children = []
                 for ejfl in ejfls:
+                    # 统计该二级分类的数量（即该二级分类本身的数量）
+                    ejfl_count = 1  # 每个二级分类本身算1个
+                    
                     ejfl_children.append(
                         TreeResponseDTO(
-                            title=ejfl.ejflmc or f"二级分类{ejfl.id}",
+                            title=f"{ejfl.ejflmc or f'二级分类{ejfl.id}'} ({ejfl_count})",
                             key=f"ejfl-{ejfl.id}",
-                            children=[]  # 可以在这里添加更深层的分类
+                            children=[],  # 可以在这里添加更深层的分类
+                            count=ejfl_count
                         )
                     )
                 
+                # 统计该一级分类下的总数量（即该一级分类下有多少个二级分类）
+                yjfl_total_count = len(ejfl_children)
+                
                 # 构建一级分类节点
                 yjfl_node = TreeResponseDTO(
-                    title=yjfl.yjflmc or f"一级分类{yjfl.id}",
+                    title=f"{yjfl.yjflmc or f'一级分类{yjfl.id}'} ({yjfl_total_count})",
                     key=f"yjfl-{yjfl.id}",
-                    children=ejfl_children
+                    children=ejfl_children,
+                    count=yjfl_total_count
                 )
                 
                 tree_data.append(yjfl_node)
             
-            return tree_data
+            # 计算总数量（所有一级分类的数量之和）
+            total_count = sum(node.count for node in tree_data)
+            
+            # 创建根节点
+            root_node = TreeResponseDTO(
+                title=f"完整分类树 ({total_count})",
+                key="root-complete",
+                children=tree_data,
+                count=total_count
+            )
+            
+            return [root_node]
             
         except Exception as e:
             self.log_error(e, {"method": "_build_classification_tree"})
