@@ -107,65 +107,80 @@ class MatrixService(BaseService):
                 self.logger.info("No rcjhzmx found for file", fileid=fileid)
                 return []
             
-            # 3. 收集所有二级分类信息
-            ejfl_set = set()  # 使用集合去重
-            ejfl_info = {}    # 存储二级分类的详细信息
+            # 3. 收集所有classify_info并去重
+            classify_info_set = set()  # 用于去重的集合
+            ejfl_count = {}  # 二级分类计数: {ejflid: count}
+            yjfl_count = {}  # 一级分类计数: {yjflid: count}
+            ejfl_info = {}   # 二级分类信息: {ejflid: {ejflmc, yjflid, yjflmc}}
+            yjfl_info = {}   # 一级分类信息: {yjflid: {yjflmc}}
             
             for rcjhzmx in rcjhzmx_list:
                 # 通过classify_info关系获取RcjMCClassifyBig
                 for classify_big in rcjhzmx.classify_info:
                     if classify_big.ejflid and classify_big.ejflmc:
-                        ejfl_key = f"{classify_big.ejflid}_{classify_big.ejflmc}"
-                        if ejfl_key not in ejfl_set:
-                            ejfl_set.add(ejfl_key)
-                            ejfl_info[ejfl_key] = {
-                                'ejflid': classify_big.ejflid,
-                                'ejflmc': classify_big.ejflmc,
-                                'yjflid': classify_big.yjflid,
-                                'yjflmc': classify_big.yjflmc
-                            }
+                        # 使用classify_info.id进行去重
+                        if classify_big.id not in classify_info_set:
+                            classify_info_set.add(classify_big.id)
+                            
+                            # 统计二级分类
+                            if classify_big.ejflid not in ejfl_count:
+                                ejfl_count[classify_big.ejflid] = 0
+                                ejfl_info[classify_big.ejflid] = {
+                                    'ejflmc': classify_big.ejflmc,
+                                    'yjflid': classify_big.yjflid,
+                                    'yjflmc': classify_big.yjflmc
+                                }
+                            ejfl_count[classify_big.ejflid] += 1
+                            
+                            # 统计一级分类
+                            if classify_big.yjflid not in yjfl_count:
+                                yjfl_count[classify_big.yjflid] = 0
+                                yjfl_info[classify_big.yjflid] = {
+                                    'yjflmc': classify_big.yjflmc
+                                }
+                            yjfl_count[classify_big.yjflid] += 1
             
             # 4. 按一级分类分组构建树形结构
             yjfl_groups = {}
-            for ejfl_key, info in ejfl_info.items():
-                yjfl_key = f"{info['yjflid']}_{info['yjflmc']}"
-                if yjfl_key not in yjfl_groups:
-                    yjfl_groups[yjfl_key] = {
-                        'yjflid': info['yjflid'],
-                        'yjflmc': info['yjflmc'],
+            for ejflid, count in ejfl_count.items():
+                info = ejfl_info[ejflid]
+                yjflid = info['yjflid']
+                
+                if yjflid not in yjfl_groups:
+                    yjfl_groups[yjflid] = {
+                        'yjflmc': yjfl_info[yjflid]['yjflmc'],
                         'ejfls': []
                     }
-                yjfl_groups[yjfl_key]['ejfls'].append({
-                    'ejflid': info['ejflid'],
-                    'ejflmc': info['ejflmc']
+                
+                yjfl_groups[yjflid]['ejfls'].append({
+                    'ejflid': ejflid,
+                    'ejflmc': info['ejflmc'],
+                    'count': count
                 })
             
             # 5. 构建树形结构
             tree_data = []
-            for yjfl_key, yjfl_data in yjfl_groups.items():
+            for yjflid, yjfl_data in yjfl_groups.items():
                 # 构建二级分类节点，按ejflid排序
                 ejfl_children = []
                 sorted_ejfls = sorted(yjfl_data['ejfls'], key=lambda x: x['ejflid'])
                 for ejfl in sorted_ejfls:
-                    # 统计该二级分类的数量（即该二级分类本身的数量）
-                    ejfl_count = 1  # 每个二级分类本身算1个
-                    
                     ejfl_children.append(
                         TreeResponseDTO(
-                            title=f"{ejfl['ejflid']}-{ejfl['ejflmc']} ({ejfl_count})",
+                            title=f"{ejfl['ejflid']}-{ejfl['ejflmc']} ({ejfl['count']})",
                             key=f"ejfl-{ejfl['ejflid']}",
                             children=[],
-                            count=ejfl_count
+                            count=ejfl['count']
                         )
                     )
                 
-                # 统计该一级分类下的总数量（即该一级分类下有多少个二级分类）
-                yjfl_total_count = len(ejfl_children)
+                # 统计该一级分类下的总数量（该一级分类下所有classify_info的总数）
+                yjfl_total_count = yjfl_count[yjflid]
                 
                 # 构建一级分类节点
                 yjfl_node = TreeResponseDTO(
-                    title=f"{yjfl_data['yjflid']}-{yjfl_data['yjflmc']} ({yjfl_total_count})",
-                    key=f"yjfl-{yjfl_data['yjflid']}",
+                    title=f"{yjflid}-{yjfl_data['yjflmc']} ({yjfl_total_count})",
+                    key=f"yjfl-{yjflid}",
                     children=ejfl_children,
                     count=yjfl_total_count
                 )
@@ -175,8 +190,8 @@ class MatrixService(BaseService):
             # 按一级分类ID排序
             tree_data.sort(key=lambda x: x.key.split('-')[1])
             
-            # 计算总数量（所有一级分类的数量之和）
-            total_count = sum(node.count for node in tree_data)
+            # 计算总数量（所有classify_info的总数）
+            total_count = sum(yjfl_count.values())
             
             # 获取文件名
             file_obj = File.query.get(fileid)
