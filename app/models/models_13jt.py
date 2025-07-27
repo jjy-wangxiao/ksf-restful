@@ -4,6 +4,7 @@ from sqlalchemy import DateTime, ForeignKey, Index, Integer, String, Text
 from sqlalchemy.orm import  Mapped, mapped_column, relationship
 from datetime import datetime
 from app import db
+from app.models.RcjMCClassifyBig import RcjItem2ClassifyRleationship
 
 
 
@@ -979,6 +980,12 @@ class Rcjhzmx(db.Model):
     jingjibiao: Mapped[Optional['Jingjibiao']] = relationship('Jingjibiao', back_populates='rcjhzmx')
     rcjhz: Mapped[Optional['Rcjhz']] = relationship('Rcjhz', back_populates='rcjhzmx')
 
+    # 与rcj分类信息的多对一关系
+    classify_info = relationship(
+        "RcjMCClassifyBig",
+        secondary=RcjItem2ClassifyRleationship,
+        backref="rcjhzmxs"
+    )
 
 class Zjcs(db.Model):
     __tablename__ = 'origin_13jt_zjcs'

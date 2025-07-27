@@ -21,6 +21,10 @@ class Config:
     HOST = os.environ.get('FLASK_HOST') or '127.0.0.1'
     PORT = int(os.environ.get('FLASK_PORT') or 5678)
     
+    # 文件上传配置
+    UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER', 'uploads')
+    MAX_CONTENT_LENGTH = int(os.environ.get('MAX_CONTENT_LENGTH', 50 * 1024 * 1024))  # 50MB
+    
     @staticmethod
     def init_app(app):
         pass

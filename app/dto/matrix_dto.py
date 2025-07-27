@@ -148,8 +148,22 @@ class FileListResponseDTO:
 
 @dataclass
 class TreeResponseDTO:
-    """树形结构响应DTO"""
-    id: str
-    filename: str
-    hashcode: str
+    """树形结构响应DTO - 符合前端Ant Design Tree组件格式"""
+    title: str
+    key: str
+    children: Optional[List['TreeResponseDTO']] = None
+    
+    def to_dict(self):
+        """转换为字典，用于JSON序列化"""
+        result = {
+            'title': self.title,
+            'key': self.key
+        }
+        if self.children:
+            result['children'] = [child.to_dict() for child in self.children]
+        return result
+    
+    def __json__(self):
+        """Flask-RESTX JSON序列化支持"""
+        return self.to_dict()
     

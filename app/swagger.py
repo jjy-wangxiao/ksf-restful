@@ -33,3 +33,6 @@ from app.api.v1.resources.dict import (
 from app.api.v1.resources.matrix_resources import (
     FileListResource
 )
+from app.api.v1.resources.upload import (
+    FileUploadResource, BatchUploadResource, FileResource, FileDownloadResource
+)

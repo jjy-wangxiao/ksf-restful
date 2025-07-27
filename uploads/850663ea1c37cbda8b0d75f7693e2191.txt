@@ -1,0 +1,2571 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "KSF RESTful API",
+    "description": "",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "dict"
+    }
+  ],
+  "paths": {
+    "/dict/dw-types": {
+      "get": {
+        "summary": "获取单位类别列表",
+        "deprecated": false,
+        "description": "",
+        "operationId": "获取单位类别列表",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "每页数量",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DwTypePaginationResponse"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      },
+      "post": {
+        "summary": "创建单位类别",
+        "deprecated": false,
+        "description": "",
+        "operationId": "创建单位类别",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DwTypeCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "创建成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DwType"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "description": "请求错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/dict/dw-types/{type_id}": {
+      "get": {
+        "summary": "获取单位类别信息",
+        "deprecated": false,
+        "description": "",
+        "operationId": "获取单位类别信息",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [
+          {
+            "name": "type_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DwType"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "404": {
+            "description": "未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      },
+      "delete": {
+        "summary": "删除单位类别",
+        "deprecated": false,
+        "description": "",
+        "operationId": "删除单位类别",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [
+          {
+            "name": "type_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "删除成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            },
+            "headers": {}
+          },
+          "404": {
+            "description": "未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      },
+      "put": {
+        "summary": "更新单位类别",
+        "deprecated": false,
+        "description": "",
+        "operationId": "更新单位类别",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [
+          {
+            "name": "type_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DwTypeUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DwType"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "description": "请求错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "404": {
+            "description": "未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/dict/dws": {
+      "get": {
+        "summary": "获取单位列表",
+        "deprecated": false,
+        "description": "",
+        "operationId": "获取单位列表",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [
+          {
+            "name": "type_id",
+            "in": "query",
+            "description": "类别ID",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "每页数量",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DwPaginationResponse"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      },
+      "post": {
+        "summary": "创建单位",
+        "deprecated": false,
+        "description": "",
+        "operationId": "创建单位",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DwCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "创建成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Dw"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "description": "请求错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/dict/dws/{dw_id}": {
+      "get": {
+        "summary": "获取单位信息",
+        "deprecated": false,
+        "description": "",
+        "operationId": "获取单位信息",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [
+          {
+            "name": "dw_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Dw"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "404": {
+            "description": "未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      },
+      "delete": {
+        "summary": "删除单位",
+        "deprecated": false,
+        "description": "",
+        "operationId": "删除单位",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [
+          {
+            "name": "dw_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "删除成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            },
+            "headers": {}
+          },
+          "404": {
+            "description": "未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      },
+      "put": {
+        "summary": "更新单位",
+        "deprecated": false,
+        "description": "",
+        "operationId": "更新单位",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [
+          {
+            "name": "dw_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DwUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Dw"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "description": "请求错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "404": {
+            "description": "未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/dict/rcj-ejfl-sxs": {
+      "get": {
+        "summary": "获取人材机二级分类属性列表",
+        "deprecated": false,
+        "description": "",
+        "operationId": "获取人材机二级分类属性列表",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "每页数量",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RcjEjflSxPaginationResponse"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      },
+      "post": {
+        "summary": "创建人材机二级分类属性",
+        "deprecated": false,
+        "description": "",
+        "operationId": "创建人材机二级分类属性",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RcjEjflSxCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "创建成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RcjEjflSx"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "description": "请求错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/dict/rcj-ejfl-sxs/{sx_id}": {
+      "get": {
+        "summary": "获取人材机二级分类属性信息",
+        "deprecated": false,
+        "description": "",
+        "operationId": "获取人材机二级分类属性信息",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [
+          {
+            "name": "sx_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RcjEjflSx"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "404": {
+            "description": "未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      },
+      "delete": {
+        "summary": "删除人材机二级分类属性",
+        "deprecated": false,
+        "description": "",
+        "operationId": "删除人材机二级分类属性",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [
+          {
+            "name": "sx_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "删除成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            },
+            "headers": {}
+          },
+          "404": {
+            "description": "未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      },
+      "put": {
+        "summary": "更新人材机二级分类属性",
+        "deprecated": false,
+        "description": "",
+        "operationId": "更新人材机二级分类属性",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [
+          {
+            "name": "sx_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RcjEjflSxUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RcjEjflSx"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "description": "请求错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "404": {
+            "description": "未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/dict/rcj-ejfls": {
+      "get": {
+        "summary": "获取人材机二级分类列表",
+        "deprecated": false,
+        "description": "",
+        "operationId": "获取人材机二级分类列表",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [
+          {
+            "name": "yjfl_id",
+            "in": "query",
+            "description": "一级分类ID",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "每页数量",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RcjEjflPaginationResponse"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      },
+      "post": {
+        "summary": "创建人材机二级分类",
+        "deprecated": false,
+        "description": "",
+        "operationId": "创建人材机二级分类",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RcjEjflCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "创建成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RcjEjfl"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "description": "请求错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/dict/rcj-ejfls/{ejfl_id}": {
+      "get": {
+        "summary": "获取人材机二级分类信息",
+        "deprecated": false,
+        "description": "",
+        "operationId": "获取人材机二级分类信息",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [
+          {
+            "name": "ejfl_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RcjEjfl"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "404": {
+            "description": "未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      },
+      "delete": {
+        "summary": "删除人材机二级分类",
+        "deprecated": false,
+        "description": "",
+        "operationId": "删除人材机二级分类",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [
+          {
+            "name": "ejfl_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "删除成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            },
+            "headers": {}
+          },
+          "404": {
+            "description": "未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      },
+      "put": {
+        "summary": "更新人材机二级分类",
+        "deprecated": false,
+        "description": "",
+        "operationId": "更新人材机二级分类",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [
+          {
+            "name": "ejfl_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RcjEjflUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RcjEjfl"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "description": "请求错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "404": {
+            "description": "未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/dict/rcj-mc-classifies": {
+      "get": {
+        "summary": "获取人材机名称分类列表",
+        "deprecated": false,
+        "description": "",
+        "operationId": "获取人材机名称分类列表",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [
+          {
+            "name": "ejflid",
+            "in": "query",
+            "description": "二级分类ID",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "yjflid",
+            "in": "query",
+            "description": "一级分类ID",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "每页数量",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RcjMCClassifyPaginationResponse"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      },
+      "post": {
+        "summary": "创建人材机名称分类",
+        "deprecated": false,
+        "description": "",
+        "operationId": "创建人材机名称分类",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RcjMCClassifyCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "创建成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RcjMCClassify"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "description": "请求错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/dict/rcj-mc-classifies/{classify_id}": {
+      "get": {
+        "summary": "获取人材机名称分类信息",
+        "deprecated": false,
+        "description": "",
+        "operationId": "获取人材机名称分类信息",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [
+          {
+            "name": "classify_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RcjMCClassify"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "404": {
+            "description": "未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      },
+      "delete": {
+        "summary": "删除人材机名称分类",
+        "deprecated": false,
+        "description": "",
+        "operationId": "删除人材机名称分类",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [
+          {
+            "name": "classify_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "删除成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            },
+            "headers": {}
+          },
+          "404": {
+            "description": "未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      },
+      "put": {
+        "summary": "更新人材机名称分类",
+        "deprecated": false,
+        "description": "",
+        "operationId": "更新人材机名称分类",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [
+          {
+            "name": "classify_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RcjMCClassifyUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RcjMCClassify"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "description": "请求错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "404": {
+            "description": "未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/dict/rcj-mc2ejflids": {
+      "get": {
+        "summary": "获取人材机名称映射列表",
+        "deprecated": false,
+        "description": "",
+        "operationId": "获取人材机名称映射列表",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [
+          {
+            "name": "ejflid",
+            "in": "query",
+            "description": "二级分类ID",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "每页数量",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RcjMC2EjflidPaginationResponse"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      },
+      "post": {
+        "summary": "创建人材机名称映射",
+        "deprecated": false,
+        "description": "",
+        "operationId": "创建人材机名称映射",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RcjMC2EjflidCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "创建成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RcjMC2Ejflid"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "description": "请求错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/dict/rcj-mc2ejflids/{mapping_id}": {
+      "get": {
+        "summary": "获取人材机名称映射信息",
+        "deprecated": false,
+        "description": "",
+        "operationId": "获取人材机名称映射信息",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [
+          {
+            "name": "mapping_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RcjMC2Ejflid"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "404": {
+            "description": "未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      },
+      "delete": {
+        "summary": "删除人材机名称映射",
+        "deprecated": false,
+        "description": "",
+        "operationId": "删除人材机名称映射",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [
+          {
+            "name": "mapping_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "删除成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            },
+            "headers": {}
+          },
+          "404": {
+            "description": "未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      },
+      "put": {
+        "summary": "更新人材机名称映射",
+        "deprecated": false,
+        "description": "",
+        "operationId": "更新人材机名称映射",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [
+          {
+            "name": "mapping_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RcjMC2EjflidUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RcjMC2Ejflid"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "description": "请求错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "404": {
+            "description": "未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/dict/rcj-yjfls": {
+      "get": {
+        "summary": "获取人材机一级分类列表",
+        "deprecated": false,
+        "description": "",
+        "operationId": "获取人材机一级分类列表",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [
+          {
+            "name": "per_page",
+            "in": "query",
+            "description": "每页数量",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RcjYjflPaginationResponse"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      },
+      "post": {
+        "summary": "创建人材机一级分类",
+        "deprecated": false,
+        "description": "",
+        "operationId": "创建人材机一级分类",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RcjYjflCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "创建成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RcjYjfl"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "description": "请求错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/dict/rcj-yjfls/{yjfl_id}": {
+      "get": {
+        "summary": "获取人材机一级分类信息",
+        "deprecated": false,
+        "description": "",
+        "operationId": "获取人材机一级分类信息",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [
+          {
+            "name": "yjfl_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RcjYjfl"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "404": {
+            "description": "未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      },
+      "delete": {
+        "summary": "删除人材机一级分类",
+        "deprecated": false,
+        "description": "",
+        "operationId": "删除人材机一级分类",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [
+          {
+            "name": "yjfl_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "删除成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            },
+            "headers": {}
+          },
+          "404": {
+            "description": "未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      },
+      "put": {
+        "summary": "更新人材机一级分类",
+        "deprecated": false,
+        "description": "",
+        "operationId": "更新人材机一级分类",
+        "tags": [
+          "dict"
+        ],
+        "parameters": [
+          {
+            "name": "yjfl_id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "example": "",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RcjYjflUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RcjYjfl"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "description": "请求错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          },
+          "404": {
+            "description": "未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    }
+  },
+  "webhooks": {},
+  "components": {
+    "schemas": {
+      "DwTypeCreate": {
+        "required": [
+          "id",
+          "typeName"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "单位类别ID"
+          },
+          "typeName": {
+            "type": "string",
+            "description": "类别名称"
+          }
+        },
+        "type": "object"
+      },
+      "Error": {
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "错误码"
+          },
+          "message": {
+            "type": "string",
+            "description": "错误信息"
+          },
+          "details": {
+            "type": "object",
+            "description": "详细信息",
+            "properties": {}
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "时间戳"
+          }
+        },
+        "type": "object"
+      },
+      "DwType": {
+        "required": [
+          "id",
+          "typeName"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "单位类别ID"
+          },
+          "typeName": {
+            "type": "string",
+            "description": "类别名称"
+          },
+          "create_time": {
+            "type": "string",
+            "format": "date-time",
+            "description": "创建时间"
+          },
+          "update_time": {
+            "type": "string",
+            "format": "date-time",
+            "description": "更新时间"
+          }
+        },
+        "type": "object"
+      },
+      "DwTypeUpdate": {
+        "properties": {
+          "typeName": {
+            "type": "string",
+            "description": "类别名称"
+          }
+        },
+        "type": "object"
+      },
+      "DwCreate": {
+        "required": [
+          "dw",
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "单位ID"
+          },
+          "type_id": {
+            "type": "string",
+            "description": "类别ID"
+          },
+          "dw": {
+            "type": "string",
+            "description": "单位名称"
+          }
+        },
+        "type": "object"
+      },
+      "Dw": {
+        "required": [
+          "dw",
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "单位ID"
+          },
+          "type_id": {
+            "type": "string",
+            "description": "类别ID"
+          },
+          "dw": {
+            "type": "string",
+            "description": "单位名称"
+          },
+          "create_time": {
+            "type": "string",
+            "format": "date-time",
+            "description": "创建时间"
+          },
+          "update_time": {
+            "type": "string",
+            "format": "date-time",
+            "description": "更新时间"
+          },
+          "type": {
+            "description": "关联的类别",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DwType"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "DwUpdate": {
+        "properties": {
+          "type_id": {
+            "type": "string",
+            "description": "类别ID"
+          },
+          "dw": {
+            "type": "string",
+            "description": "单位名称"
+          }
+        },
+        "type": "object"
+      },
+      "RcjEjflSxCreate": {
+        "required": [
+          "id",
+          "sx"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "属性ID"
+          },
+          "sx": {
+            "type": "string",
+            "description": "属性名称"
+          }
+        },
+        "type": "object"
+      },
+      "RcjEjflSx": {
+        "required": [
+          "id",
+          "sx"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "属性ID"
+          },
+          "sx": {
+            "type": "string",
+            "description": "属性名称"
+          },
+          "create_time": {
+            "type": "string",
+            "format": "date-time",
+            "description": "创建时间"
+          },
+          "update_time": {
+            "type": "string",
+            "format": "date-time",
+            "description": "更新时间"
+          }
+        },
+        "type": "object"
+      },
+      "RcjEjflSxUpdate": {
+        "properties": {
+          "sx": {
+            "type": "string",
+            "description": "属性名称"
+          }
+        },
+        "type": "object"
+      },
+      "RcjYjflCreate": {
+        "required": [
+          "id",
+          "yjflmc"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "一级分类ID"
+          },
+          "yjflmc": {
+            "type": "string",
+            "description": "一级分类名称"
+          },
+          "yjflms": {
+            "type": "string",
+            "description": "一级分类描述"
+          }
+        },
+        "type": "object"
+      },
+      "RcjYjfl": {
+        "required": [
+          "id",
+          "yjflmc"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "一级分类ID"
+          },
+          "yjflmc": {
+            "type": "string",
+            "description": "一级分类名称"
+          },
+          "yjflms": {
+            "type": "string",
+            "description": "一级分类描述"
+          },
+          "create_time": {
+            "type": "string",
+            "format": "date-time",
+            "description": "创建时间"
+          },
+          "update_time": {
+            "type": "string",
+            "format": "date-time",
+            "description": "更新时间"
+          }
+        },
+        "type": "object"
+      },
+      "RcjYjflUpdate": {
+        "properties": {
+          "yjflmc": {
+            "type": "string",
+            "description": "一级分类名称"
+          },
+          "yjflms": {
+            "type": "string",
+            "description": "一级分类描述"
+          }
+        },
+        "type": "object"
+      },
+      "RcjEjflCreate": {
+        "required": [
+          "ejflmc",
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "二级分类ID"
+          },
+          "yjfl_id": {
+            "type": "string",
+            "description": "一级分类ID"
+          },
+          "ejflmc": {
+            "type": "string",
+            "description": "二级分类名称"
+          },
+          "ejflms": {
+            "type": "string",
+            "description": "二级分类描述"
+          },
+          "sx_ids": {
+            "type": "array",
+            "description": "关联的属性ID列表",
+            "items": {
+              "type": "string"
+            }
+          },
+          "dw_ids": {
+            "type": "array",
+            "description": "关联的单位ID列表",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "type": "object"
+      },
+      "RcjEjfl": {
+        "required": [
+          "ejflmc",
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "二级分类ID"
+          },
+          "yjfl_id": {
+            "type": "string",
+            "description": "一级分类ID"
+          },
+          "ejflmc": {
+            "type": "string",
+            "description": "二级分类名称"
+          },
+          "ejflms": {
+            "type": "string",
+            "description": "二级分类描述"
+          },
+          "create_time": {
+            "type": "string",
+            "format": "date-time",
+            "description": "创建时间"
+          },
+          "update_time": {
+            "type": "string",
+            "format": "date-time",
+            "description": "更新时间"
+          },
+          "yjfl": {
+            "description": "关联的一级分类",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RcjYjfl"
+              }
+            ]
+          },
+          "sxs": {
+            "type": "array",
+            "description": "关联的属性列表",
+            "items": {
+              "type": "string"
+            }
+          },
+          "dws": {
+            "type": "array",
+            "description": "关联的单位列表",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "type": "object"
+      },
+      "RcjEjflUpdate": {
+        "properties": {
+          "yjfl_id": {
+            "type": "string",
+            "description": "一级分类ID"
+          },
+          "ejflmc": {
+            "type": "string",
+            "description": "二级分类名称"
+          },
+          "ejflms": {
+            "type": "string",
+            "description": "二级分类描述"
+          },
+          "sx_ids": {
+            "type": "array",
+            "description": "关联的属性ID列表",
+            "items": {
+              "type": "string"
+            }
+          },
+          "dw_ids": {
+            "type": "array",
+            "description": "关联的单位ID列表",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "type": "object"
+      },
+      "RcjMC2EjflidCreate": {
+        "required": [
+          "ejflid",
+          "orignal_rcjmc"
+        ],
+        "properties": {
+          "ejflid": {
+            "type": "string",
+            "description": "二级分类ID"
+          },
+          "orignal_rcjmc": {
+            "type": "string",
+            "description": "原始人材机名称"
+          }
+        },
+        "type": "object"
+      },
+      "RcjMC2Ejflid": {
+        "required": [
+          "ejflid",
+          "orignal_rcjmc"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "映射ID"
+          },
+          "ejflid": {
+            "type": "string",
+            "description": "二级分类ID"
+          },
+          "orignal_rcjmc": {
+            "type": "string",
+            "description": "原始人材机名称"
+          },
+          "create_time": {
+            "type": "string",
+            "format": "date-time",
+            "description": "创建时间"
+          },
+          "update_time": {
+            "type": "string",
+            "format": "date-time",
+            "description": "更新时间"
+          }
+        },
+        "type": "object"
+      },
+      "RcjMC2EjflidUpdate": {
+        "properties": {
+          "ejflid": {
+            "type": "string",
+            "description": "二级分类ID"
+          },
+          "orignal_rcjmc": {
+            "type": "string",
+            "description": "原始人材机名称"
+          }
+        },
+        "type": "object"
+      },
+      "RcjMCClassifyCreate": {
+        "required": [
+          "cleaned_rcj_original_mc"
+        ],
+        "properties": {
+          "cleaned_rcj_original_mc": {
+            "type": "string",
+            "description": "清洗后的人材机名称"
+          },
+          "yjflid": {
+            "type": "string",
+            "description": "一级分类ID"
+          },
+          "yjflmc": {
+            "type": "string",
+            "description": "一级分类名称"
+          },
+          "ejflid": {
+            "type": "string",
+            "description": "二级分类ID"
+          },
+          "ejflmc": {
+            "type": "string",
+            "description": "二级分类名称"
+          }
+        },
+        "type": "object"
+      },
+      "RcjMCClassify": {
+        "required": [
+          "cleaned_rcj_original_mc"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "分类ID"
+          },
+          "cleaned_rcj_original_mc": {
+            "type": "string",
+            "description": "清洗后的人材机名称"
+          },
+          "yjflid": {
+            "type": "string",
+            "description": "一级分类ID"
+          },
+          "yjflmc": {
+            "type": "string",
+            "description": "一级分类名称"
+          },
+          "ejflid": {
+            "type": "string",
+            "description": "二级分类ID"
+          },
+          "ejflmc": {
+            "type": "string",
+            "description": "二级分类名称"
+          },
+          "create_time": {
+            "type": "string",
+            "format": "date-time",
+            "description": "创建时间"
+          },
+          "update_time": {
+            "type": "string",
+            "format": "date-time",
+            "description": "更新时间"
+          }
+        },
+        "type": "object"
+      },
+      "RcjMCClassifyUpdate": {
+        "properties": {
+          "cleaned_rcj_original_mc": {
+            "type": "string",
+            "description": "清洗后的人材机名称"
+          },
+          "yjflid": {
+            "type": "string",
+            "description": "一级分类ID"
+          },
+          "yjflmc": {
+            "type": "string",
+            "description": "一级分类名称"
+          },
+          "ejflid": {
+            "type": "string",
+            "description": "二级分类ID"
+          },
+          "ejflmc": {
+            "type": "string",
+            "description": "二级分类名称"
+          }
+        },
+        "type": "object"
+      },
+      "DwTypeListResponse": {
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DwType"
+            }
+          },
+          "meta": {
+            "type": "object",
+            "description": "分页信息",
+            "properties": {}
+          }
+        },
+        "type": "object"
+      },
+      "DwTypePaginationResponse": {
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "单位类别列表",
+            "items": {
+              "$ref": "#/components/schemas/DwType"
+            }
+          },
+          "meta": {
+            "description": "分页信息",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PaginationMeta"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "PaginationMeta": {
+        "properties": {
+          "page": {
+            "type": "integer",
+            "description": "当前页码"
+          },
+          "per_page": {
+            "type": "integer",
+            "description": "每页数量"
+          },
+          "total": {
+            "type": "integer",
+            "description": "总记录数"
+          },
+          "pages": {
+            "type": "integer",
+            "description": "总页数"
+          },
+          "has_next": {
+            "type": "boolean",
+            "description": "是否有下一页"
+          },
+          "has_prev": {
+            "type": "boolean",
+            "description": "是否有上一页"
+          }
+        },
+        "type": "object"
+      },
+      "DwPaginationResponse": {
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "单位列表",
+            "items": {
+              "$ref": "#/components/schemas/Dw"
+            }
+          },
+          "meta": {
+            "description": "分页信息",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PaginationMeta"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "RcjEjflSxPaginationResponse": {
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "人材机二级分类属性列表",
+            "items": {
+              "$ref": "#/components/schemas/RcjEjflSx"
+            }
+          },
+          "meta": {
+            "description": "分页信息",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PaginationMeta"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "RcjYjflPaginationResponse": {
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "人材机一级分类列表",
+            "items": {
+              "$ref": "#/components/schemas/RcjYjfl"
+            }
+          },
+          "meta": {
+            "description": "分页信息",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PaginationMeta"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "RcjEjflPaginationResponse": {
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "人材机二级分类列表",
+            "items": {
+              "$ref": "#/components/schemas/RcjEjfl"
+            }
+          },
+          "meta": {
+            "description": "分页信息",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PaginationMeta"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "RcjMC2EjflidPaginationResponse": {
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "人材机名称映射列表",
+            "items": {
+              "$ref": "#/components/schemas/RcjMC2Ejflid"
+            }
+          },
+          "meta": {
+            "description": "分页信息",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PaginationMeta"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "RcjMCClassifyPaginationResponse": {
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "人材机名称分类列表",
+            "items": {
+              "$ref": "#/components/schemas/RcjMCClassify"
+            }
+          },
+          "meta": {
+            "description": "分页信息",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PaginationMeta"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      }
+    },
+    "securitySchemes": {}
+  },
+  "servers": [],
+  "security": []
+}
