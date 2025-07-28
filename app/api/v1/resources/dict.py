@@ -482,6 +482,24 @@ class RcjEjflSxListResource(Resource):
             err = ErrorResponse(code=ErrorCode.INTERNAL_ERROR, message='服务器内部错误', details={'error': str(e)})
             return err.to_dict(), 500
 
+
+@dict_ns.route('/rcj-ejfl-sxs/ejfl/<string:ejflid>')
+class RcjEjflSxByEjflIdListResource(Resource):
+    """人材机二级分类属性列表资源"""
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.dict_service = DictService()
+        
+    @dict_ns.doc('获取人材机二级分类属性列表')
+    @dict_ns.param('ejflid', '二级分类ID', type=str)
+    @dict_ns.response(200, '获取成功', rcj_ejfl_sx_pagination_response)
+    def get(self, ejflid):
+        """获取人材机二级分类属性列表"""
+        result = self.dict_service.get_rcj_ejfl_sxs_by_ejflid(ejflid)
+        return result, 200
+
+
 @dict_ns.route('/rcj-ejfl-sxs/<string:sx_id>')
 @dict_ns.param('sx_id', '属性ID')
 class RcjEjflSxResource(Resource):

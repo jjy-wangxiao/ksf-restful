@@ -384,6 +384,21 @@ class DictService(BaseService):
         # 使用响应构建器创建分页响应
         return ResponseBuilder.from_pagination(pagination, sxs_dto)
     
+    def get_rcj_ejfl_sxs_by_ejflid(self, ejflid: str) :
+        """根据二级分类ID获取人材机二级分类属性列表"""
+        ejfl_sxs = RcjEjfl.query.filter_by(id=ejflid).first()._sxs
+        if not ejfl_sxs:
+            return []
+        
+        sxitems = []
+        for sx in ejfl_sxs:
+            sxitem = {
+                'id': sx.id,
+                'sx': sx.sx
+            }
+            sxitems.append(sxitem)
+        return sxitems
+
     def get_rcj_ejfl_sx_by_id(self, sx_id: str) -> Optional[RcjEjflSxResponseDTO]:
         """根据ID获取人材机二级分类属性"""
         sx = RcjEjflSx.query.get(sx_id)
