@@ -182,3 +182,20 @@ class RcjMCClassifyByEjflIdListResource(Resource):
         ejflid = request.args.get('ejflid', None, type=str)
         result = self.matrix_service.get_rcj_mc_classifies_by_fileid(fileid, ejflid)
         return result, 200
+    
+@matrix_ns.route('/m3')
+class M3Resource(Resource):
+    """M3资源"""
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.matrix_service = MatrixService()
+        
+    @matrix_ns.doc('获取M3')
+    @matrix_ns.param('ejflid', '二级分类ID', type=str)
+    @matrix_ns.response(200, '获取成功')
+    def get(self):
+        """获取M3"""
+        ejflid = request.args.get('ejflid', None, type=str)
+        result = self.matrix_service.get_m3(ejflid)
+        return result, 200

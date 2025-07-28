@@ -7,7 +7,7 @@ from app.models.RcjMCClassifyBig import RcjMCClassifyBig
 from app.models.dict import RcjYjfl, RcjEjfl
 from app.services.base_service import BaseService
 from app.dto.common import PaginatedResponse, PaginationMeta
-
+import json
 from app.dto.matrix_dto import (
     FileListQueryDTO,
     FileListResponseDTO,
@@ -313,4 +313,43 @@ class MatrixService(BaseService):
             return resp_list
         except Exception as e:
             self.log_error(e, {"method": "get_rcj_mc_classifies_by_fileid", "fileid": fileid, "ejflid": ejflid})
+            return []
+        
+    def get_m3(self, ejflid: str) -> List[any]:
+        """
+        获取M3
+        """
+        try:
+            m3_list = RcjMCClassifyBig.query.filter_by(ejflid=ejflid).all()
+            sxs = RcjEjfl.query.filter_by(id=ejflid).first()._sxs
+
+            if not m3_list:
+                self.logger.info("No m3 found for ejflid", ejflid=ejflid)
+                return []
+            
+            resp_list = []
+            for m3 in m3_list:
+                resp_item = {}
+                resp_item['id'] = m3.id
+                resp_item['original_rcjmc'] = m3.original_rcjmc
+                resp_item['dw'] = m3.rcjdw
+                resp_item['dj'] = m3.rcjdj
+                resp_item['bjsj'] = m3.bjsj.strftime('%Y-%m-%d') if m3.bjsj else None
+                resp_item['cleaned_rcjmc'] = m3.cleaned_rcjmc
+                resp_item['parsed_rcjmc'] = m3.parsed_rcjmc
+                resp_item['ejflid'] = m3.ejflid
+                resp_item['yjflid'] = m3.yjflid
+                resp_item['yjflmc'] = m3.yjflmc
+                resp_item['ejflmc'] = m3.ejflmc
+                resp_item['sjjhflid'] = m3.sjjhflid
+                resp_item['sjjhflmc'] = m3.sjjhflmc
+                resp_item['sjjhflzt'] = m3.sjjhflzt
+                for sx in sxs:
+                    sx_attr = f'sx_{sx.id:0>4}'
+                    resp_item[sx.id] = getattr(m3, sx_attr, None)
+                resp_list.append(resp_item)
+            
+            return resp_list
+        except Exception as e:
+            self.log_error(e, {"method": "get_m3", "ejflid": ejflid})
             return []
