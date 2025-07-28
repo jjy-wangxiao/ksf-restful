@@ -162,3 +162,23 @@ class TreeResource(Resource):
                 message="获取树形结构失败",
                 details={"error": str(e)}
             ).to_dict(), 500
+
+
+@matrix_ns.route('/rcjclassify')
+class RcjMCClassifyByEjflIdListResource(Resource):
+    """人材机名称分类列表资源"""
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.matrix_service = MatrixService()
+        
+    @matrix_ns.doc('获取人材机名称分类列表')
+    @matrix_ns.param('fileid', '文件ID', type=str)
+    @matrix_ns.param('ejflid', '二级分类ID', type=str)
+    @matrix_ns.response(200, '获取成功')
+    def get(self):
+        """获取人材机名称分类列表"""
+        fileid = request.args.get('fileid', None, type=str)
+        ejflid = request.args.get('ejflid', None, type=str)
+        result = self.matrix_service.get_rcj_mc_classifies_by_fileid(fileid, ejflid)
+        return result, 200

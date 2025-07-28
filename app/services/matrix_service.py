@@ -272,3 +272,45 @@ class MatrixService(BaseService):
             self.log_error(e, {"method": "_build_classification_tree"})
             # 返回空列表而不是抛出异常，确保API不会崩溃
             return []
+        
+    def get_rcj_mc_classifies_by_fileid(self, fileid: str, ejflid: str) -> List[any]:
+        """
+        根据文件ID、二级分类ID和一级分类ID获取人材机名称分类列表
+        """
+        try:
+            rcjhzmx_list = Rcjhzmx.query.filter_by(file_id=fileid).all()
+            sxs = RcjEjfl.query.filter_by(id=ejflid).first()._sxs
+
+            if not rcjhzmx_list:
+                self.logger.info("No rcjhzmx found for file", fileid=fileid)
+                return []
+            # 对所有classify_big去重后统计
+            unique_classify_big_set = set()
+            resp_list = []
+            for rcjhzmx in rcjhzmx_list:
+                classify_big_list = rcjhzmx.classify_info
+                for classify_big in classify_big_list:
+                    if classify_big.ejflid == ejflid:
+                        if classify_big.id not in unique_classify_big_set:
+                            unique_classify_big_set.add(classify_big.id)
+                
+                            resp_item = {}
+
+                            resp_item['id'] = rcjhzmx.id
+                            resp_item['original_rcjmc'] = rcjhzmx.mc
+                            resp_item['dw'] = rcjhzmx.dw
+                            resp_item['dj'] = rcjhzmx.dj
+                            resp_item['bjsj'] = rcjhzmx.jingjibiao.toubiaoxx[0].bztime
+                            resp_item['cleaned_rcjmc'] = classify_big.cleaned_rcjmc
+                            resp_item['parsed_rcjmc'] = classify_big.parsed_rcjmc
+                            
+                            for sx in sxs:
+                                # 动态获取属性值，例如sx_0001、sx_0002等
+                                sx_attr = f'sx_{sx.id:0>4}'
+                                resp_item[sx.id] = getattr(classify_big, sx_attr, None)
+                            resp_list.append(resp_item)
+
+            return resp_list
+        except Exception as e:
+            self.log_error(e, {"method": "get_rcj_mc_classifies_by_fileid", "fileid": fileid, "ejflid": ejflid})
+            return []
