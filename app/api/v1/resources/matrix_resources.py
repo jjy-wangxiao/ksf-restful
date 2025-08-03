@@ -199,3 +199,20 @@ class M3Resource(Resource):
         ejflid = request.args.get('ejflid', None, type=str)
         result = self.matrix_service.get_m3(ejflid)
         return result, 200
+    
+@matrix_ns.route('/fileparser')
+class FileParserResource(Resource):
+    """文件解析资源"""
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.matrix_service = MatrixService()
+        
+    @matrix_ns.doc('解析文件')
+    @matrix_ns.param('fileid', '文件ID', type=str)
+    @matrix_ns.response(200, '解析成功')
+    def get(self):
+        """解析文件"""
+        fileid = request.args.get('fileid', None, type=str)
+        result = self.matrix_service.parse_file(fileid)
+        return result, 200

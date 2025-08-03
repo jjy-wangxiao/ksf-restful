@@ -28,7 +28,7 @@ class UploadService(BaseService):
         self.db = db
         self.allowed_extensions = {
             'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'doc', 'docx', 
-            'xls', 'xlsx', 'ppt', 'pptx', 'zip', 'rar', '7z'
+            'xls', 'xlsx', 'ppt', 'pptx', 'zip', 'rar', '7z','13jt'
         }
         self.max_file_size = 50 * 1024 * 1024  # 50MB
     
@@ -80,7 +80,8 @@ class UploadService(BaseService):
             # 创建数据库记录
             db_file = File(
                 hash=file_hash,
-                filename=original_filename,  # 存储原始文件名
+                # filename=original_filename,  # 存储原始文件名
+                filename=file.filename,
                 filesize=file_size,
                 filetype=file_extension.lstrip('.')
             )

@@ -14,7 +14,11 @@ from app.dto.matrix_dto import (
     TreeResponseDTO
 )
 from app.utils.response_builder import ResponseBuilder
-
+import app.services.import_13jt_dynamic as import_13jt_dynamic
+import glob
+from datetime import datetime
+from app import db
+from flask import current_app
 
 class MatrixService(BaseService):
     """矩阵服务类"""
@@ -353,3 +357,104 @@ class MatrixService(BaseService):
         except Exception as e:
             self.log_error(e, {"method": "get_m3", "ejflid": ejflid})
             return []
+        
+    def parse_file(self, fileid: str) -> bool:
+        """
+        解析文件
+        """
+        try:
+
+            # DATABASE_URL = "sqlite:///db.sqlite"
+
+            # # 创建数据库引擎
+            # if "mysql" in DATABASE_URL.lower():
+            #     engine = import_13jt_dynamic.create_engine(
+            #     DATABASE_URL, 
+            #     echo=False,
+            #     pool_pre_ping=True,
+            #     pool_recycle=3600,
+            #     connect_args={
+            #             "connect_timeout": 30,
+            #             "read_timeout": 30,
+            #             "write_timeout": 30
+            #         }
+            #     )
+            # else:
+            #     engine = import_13jt_dynamic.create_engine(
+            #         DATABASE_URL, 
+            #         echo=False,
+            #         pool_pre_ping=True,
+            #         pool_recycle=3600,
+            #         connect_args={
+            #             "timeout": 30,
+            #             "check_same_thread": False
+            #         }
+            #     )
+            
+            # 创建所有表
+            # db.model.metadata.create_all(engine)
+            
+            # 获取所有模型类
+            models = import_13jt_dynamic.get_all_models()
+            print(f"找到 {len(models)} 个模型类")
+            
+            # 创建会话
+
+            session = db.session
+            
+            # 是否清空所有表
+            # if args.reset:
+            #     print("[警告] 正在清空所有表数据...")
+            #     clear_all_tables(session, Base)
+            #     print("所有表数据已清空。")
+            
+            # 获取13jt文件列表
+            directory = upload_dir = current_app.config.get('UPLOAD_FOLDER', 'uploads')+'/'
+            filename = File.query.get(fileid).hash+'.13jt'
+
+            import os
+            file = os.path.join(directory, filename)
+            
+            if not file:
+                print(f"在 {directory} 目录下没有找到{filename}文件")
+                return
+            
+            print(f"找到 {file} ")
+
+            files = [file]
+            
+            # 导入所有文件
+            success_count = 0
+            total_start_time = datetime.now()
+            
+            for i, file_path in enumerate(files, 1):
+                try:
+                    file_start_time = datetime.now()
+                    import_13jt_dynamic.import_13jt_file(file_path, models, session, fileid)
+                    file_end_time = datetime.now()
+                    file_duration = (file_end_time - file_start_time).total_seconds()
+                    print(f"文件 {i}/{len(files)} 处理完成，耗时: {file_duration:.2f}秒")
+                    success_count += 1
+                except Exception as e:
+                    print(f"处理文件 {file_path} 时出错: {e}\r\n")
+                    raise
+            
+            total_end_time = datetime.now()
+            total_duration = (total_end_time - total_start_time).total_seconds()
+            
+            print(f"\n导入完成: {success_count}/{len(files)} 个文件成功导入")
+            print(f"总耗时: {total_duration:.2f}秒")
+            print(f"平均每个文件: {total_duration/len(files):.2f}秒")
+            print(f"-"*100)
+            
+            # 关闭会话
+            session.close()
+
+            return True
+        except Exception as e:
+            self.log_error(e, {"method": "parse_file", "fileid": fileid})
+            print(f"处理文件 {fileid} 时出错: {e}\r\n")
+            return False
+        
+if __name__ == "__main__":
+    MatrixService().parse_file("18")
