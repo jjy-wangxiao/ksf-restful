@@ -456,5 +456,13 @@ class MatrixService(BaseService):
             print(f"处理文件 {fileid} 时出错: {e}\r\n")
             return False
         
-if __name__ == "__main__":
-    MatrixService().parse_file("18")
+    def analysis_file(self, fileid: str) -> bool:
+        """
+        分析文件
+        """
+        try:
+            return True
+        except Exception as e:
+            self.log_error(e, {"method": "analysis_file", "fileid": fileid})
+            return False
+        
